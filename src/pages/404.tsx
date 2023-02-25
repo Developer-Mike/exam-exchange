@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar"
 import Head from "next/head"
-import styles from '@/styles/404.module.css'
+import styles from '@/styles/404.module.scss'
 
 export default function NotFound() {
   return (

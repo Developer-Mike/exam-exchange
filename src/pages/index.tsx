@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import styles from '@/styles/Index.module.css'
+import styles from '@/styles/Index.module.scss'
 import Navbar from '@/components/Navbar'
 
 export default function Index() {
@@ -17,7 +17,7 @@ export default function Index() {
         <div className={styles.fullscreen}>
           <div className={styles.textCarusel}>
             <div className={styles.textHolder}>
-              {caruselStrings.map(text => <span className={styles.textItem}>{text}<br/></span>)}
+              {caruselStrings.map(text => <span key={text} className={styles.textItem}>{text}<br/></span>)}
             </div>
           </div>
         </div>

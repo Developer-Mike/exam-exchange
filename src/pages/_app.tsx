@@ -1,5 +1,5 @@
-import '@/styles/globals.css'
-import { supabase } from '@/utils/supabase'
+import '@/styles/globals.scss'
+import { supabase } from '@/lib/supabase'
 import { AuthSession } from '@supabase/supabase-js'
 import type { AppProps } from 'next/app'
 import { createContext, useEffect, useState } from 'react'
@@ -19,7 +19,7 @@ export default function App({ Component, pageProps }: AppProps) {
   })() })
 
   return (
-    <SessionContext.Provider value={{ session, setSession }}>
+    <SessionContext.Provider value={{ session: session, setSession: setSession }}>
       <Component {...pageProps} />
     </SessionContext.Provider>
   )

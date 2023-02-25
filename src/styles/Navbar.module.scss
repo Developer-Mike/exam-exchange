@@ -8,12 +8,12 @@
     margin: 20px;
 
     #logoBig {
-      color: globals.$accent-color;
+      color: $accent-color;
       margin: 0;
     }
 
     #logoSmall {
-      color: globals.$on-surface-color;
+      color: $on-surface-color;
       margin: 0;
     }
   }
@@ -29,7 +29,7 @@
       margin: 5px 10px;
 
       text-decoration: none;
-      color: globals.$on-surface-color;
+      color: $on-surface-color;
     }
   }
 
@@ -85,7 +85,7 @@
         bottom: calc(-100% - 37.5px);
         padding-top: 10px;
 
-        background-color: globals.$surface-color-hover;
+        background-color: $surface-color-hover;
         border-radius: 0 0 8px 8px;
 
         visibility: hidden;
@@ -108,7 +108,7 @@
           justify-content: space-between;
 
           text-decoration: none;
-          color: globals.$on-surface-color;
+          color: $on-surface-color;
 
           margin: 5px;
           padding: 10px;
@@ -116,7 +116,7 @@
           transition: background-color 0.15s ease-in-out;
 
           &:hover {
-            background-color: globals.$accent-color;
+            background-color: $accent-color;
           }
 
           .icon {
@@ -138,7 +138,7 @@
       }
 
       &:hover, &:has(.expanded) {
-        background-color: globals.$surface-color-hover;
+        background-color: $surface-color-hover;
       }
     }
   }

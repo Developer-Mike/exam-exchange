@@ -1,7 +1,7 @@
-import styles from '@/styles/components/Navbar.module.scss'
+import styles from '@/styles/Navbar.module.scss'
 import { schoolName } from "@/config"
 import { SessionContext } from "@/pages/_app"
-import { supabase } from "@/utils/supabase"
+import { supabase } from "@/lib/supabase"
 import { getAvatar, getFirstName } from "@/utils/user-helper"
 import { useContext, useEffect, useState } from "react"
 
@@ -27,8 +27,8 @@ export default function Navbar() {
   })() })
 
   const expandDropdown = () => {
-    let dropdown = document.getElementById("dropdown")
-    dropdown && dropdown.classList.toggle("expanded")
+    let dropdown = document.getElementById(styles.dropdown)
+    dropdown && dropdown.classList.toggle(styles.expanded)
   }
 
   return (

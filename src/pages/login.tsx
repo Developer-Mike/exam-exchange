@@ -1,8 +1,8 @@
 import Head from 'next/head'
-import styles from '@/styles/Login.module.css'
+import styles from '@/styles/Login.module.scss'
 import { useState } from 'react'
 import { isEmailValid } from '@/utils/user-helper'
-import { supabase } from '@/utils/supabase'
+import { supabase } from '@/lib/supabase'
 import Navbar from '@/components/Navbar'
 
 export default function Login() {
