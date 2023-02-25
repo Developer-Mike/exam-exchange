@@ -1,0 +1,43 @@
+.fullscreen {
+  z-index: -1;
+  display: grid;
+  place-items: center;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+}
+
+.textCarusel {
+  position: relative;
+
+  height: 3rem;
+  line-height: 300%;
+  overflow: hidden;
+
+  .textHolder {
+    display: flex;
+    flex-direction: column;
+
+    animation: slide-text 10s cubic-bezier(0.9, 0, 0.1, 1) infinite;
+
+    @keyframes slide-text {
+      0% { transform: translateY(0rem); }
+      20% { transform: translateY(-3rem); }
+      40% { transform: translateY(-6rem); }
+      60% { transform: translateY(-9rem); }
+      80% { transform: translateY(-12rem); }
+      100% { transform: translateY(-15rem); }
+    }
+
+    .textItem {
+      display: inline-block;
+      font-size: 2.5rem;
+      font-weight: bold;
+      text-align: center;
+    }
+  }
+}
