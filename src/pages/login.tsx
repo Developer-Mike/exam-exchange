@@ -1,15 +1,14 @@
 import Head from 'next/head'
 import styles from '@/styles/Login.module.scss'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { isEmailValid } from '@/utils/user-helper'
 import { supabase } from '@/lib/supabase'
-import Navbar from '@/components/Navbar'
-import { SessionContext } from './_app'
+import { useSession } from './_app'
 import { useRouter } from 'next/router'
 
 export default function Login() {
   const router = useRouter()
-  const sessionContext = useContext(SessionContext)!
+  const sessionContext = useSession()
   const [isInvalidEmail, setIsInvalidEmail] = useState(false)
 
   if (sessionContext.session) router.push("/")
@@ -38,8 +37,6 @@ export default function Login() {
         <title>Exam Exchange - Login</title>
       </Head>
       <main>
-        <Navbar />
-
         <h1>Login</h1>
 
         <input id={styles.email} type="text" placeholder="Email" />

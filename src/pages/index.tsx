@@ -12,8 +12,6 @@ export default function Index() {
         <title>Exam Exchange</title>
       </Head>
       <main>
-        <Navbar />
-
         <div className={styles.fullscreen}>
           <div className={styles.textCarusel}>
             <div className={styles.textHolder}>

@@ -1,17 +1,17 @@
 import styles from '@/styles/Navbar.module.scss'
 import { schoolName } from "@/config"
-import { SessionContext } from "@/pages/_app"
+import { useSession } from "@/pages/_app"
 import { supabase } from "@/lib/supabase"
 import { getAvatar, getFirstName } from "@/utils/user-helper"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function Navbar() {
-  const sessionContext = useContext(SessionContext)!
+  const sessionContext = useSession()
   const [username, setUsername] = useState<string | null>(null)
   const [credits, setCredits] = useState<number | null>(null)
 
   useEffect(() => { (async () => {
-    if (sessionContext.session == null || username || credits) return
+    if (!sessionContext.session || username || credits) return
     let user = sessionContext.session?.user
 
     setUsername(getFirstName(user?.email ?? ""))
@@ -24,7 +24,7 @@ export default function Navbar() {
     if (error && status !== 406) throw error
 
     setCredits(data?.credits ?? 0)
-  })() })
+  })() }, [sessionContext.session])
 
   const expandDropdown = () => {
     let dropdown = document.getElementById(styles.dropdown)
