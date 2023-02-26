@@ -7,11 +7,11 @@ import { useContext, useEffect, useState } from "react"
 
 export default function Navbar() {
   const sessionContext = useContext(SessionContext)!
-  const [username, setUsername] = useState("")
-  const [credits, setCredits] = useState(0)
+  const [username, setUsername] = useState<string | null>(null)
+  const [credits, setCredits] = useState<number | null>(null)
 
   useEffect(() => { (async () => {
-    if (sessionContext.session == null) return
+    if (sessionContext.session == null || username || credits) return
     let user = sessionContext.session?.user
 
     setUsername(getFirstName(user?.email ?? ""))

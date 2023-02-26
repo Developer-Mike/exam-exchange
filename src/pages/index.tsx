@@ -17,7 +17,7 @@ export default function Index() {
         <div className={styles.fullscreen}>
           <div className={styles.textCarusel}>
             <div className={styles.textHolder}>
-              {caruselStrings.map(text => <span key={text} className={styles.textItem}>{text}<br/></span>)}
+              {caruselStrings.map((text, i) => <span key={i} className={styles.textItem}>{text}<br/></span>)}
             </div>
           </div>
         </div>

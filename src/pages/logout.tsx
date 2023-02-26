@@ -6,6 +6,7 @@ import styles from '@/styles/Logout.module.scss'
 
 export default function Logout() {
   const router = useRouter()
+  
   useEffect(() => { (async () => {
     await supabase.auth.signOut()
     router.push("/")

@@ -75,6 +75,7 @@ CREATE TRIGGER on_auth_user_created
 
 CREATE TABLE public.teachers (
     id SERIAL PRIMARY KEY,
+    validated BOOLEAN DEFAULT false,
     abbreviation VARCHAR(3) UNIQUE NOT NULL,
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL
@@ -87,8 +88,16 @@ FOR SELECT USING (
   true
 );
 
+CREATE POLICY "Write access"
+ON public.teachers
+FOR INSERT 
+WITH CHECK (
+    validated = false 
+);
+
 CREATE TABLE public.subjects (
     id SERIAL PRIMARY KEY,
+    validated BOOLEAN DEFAULT false,
     subject_name TEXT NOT NULL,
     color VARCHAR(6) NOT NULL
 );
@@ -98,6 +107,13 @@ CREATE POLICY "Read access for everyone"
 ON public.subjects
 FOR SELECT USING (
   true
+);
+
+CREATE POLICY "Write access"
+ON public.subjects
+FOR INSERT 
+WITH CHECK (
+    validated = false 
 );
 
 CREATE TABLE public.upcoming_exams (
