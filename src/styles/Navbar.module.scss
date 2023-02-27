@@ -6,6 +6,8 @@
     flex-direction: column;
 
     margin: 20px;
+    user-select: none;
+    text-decoration: none;
 
     #logoBig {
       color: $accent-color;
@@ -43,6 +45,7 @@
 
     #login button {
       font-size: 1.1rem;
+      font-weight: 600;
     }
     
     #user {

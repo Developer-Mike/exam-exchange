@@ -17,7 +17,7 @@ export default function Logout() {
       <Head>
         <title>Exam Exchange - Logout</title>
       </Head>
-      <main className={styles.fullscreen}>
+      <main className="fullscreen">
        Logging Out...
       </main>
     </>

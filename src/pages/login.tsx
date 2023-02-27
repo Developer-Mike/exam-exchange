@@ -37,7 +37,7 @@ export default function Login() {
       <Head>
         <title>Exam Exchange - Login</title>
       </Head>
-      <main>
+      <main className="fullscreen">
         <div className={styles.card}>
           <h1>Login</h1>
 

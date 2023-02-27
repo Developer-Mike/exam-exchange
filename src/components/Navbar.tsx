@@ -15,10 +15,10 @@ export default function Navbar() {
 
   return (
     <div id={styles.navbar}>
-      <div id={styles.logo}>
+      <a href="/" id={styles.logo}>
         <h1 id={styles.logoBig}>Exam Exchange</h1>
         <h4 id={styles.logoSmall}>{schoolName}</h4>
-      </div>
+      </a>
       <div id={styles.links}>
         <a href="/">Home</a>
         <a href="/dashboard">Dashboard</a>
