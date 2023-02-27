@@ -10,6 +10,7 @@ export default function Login() {
   const router = useRouter()
   const authContext = useAuthContext()
   const [isInvalidEmail, setIsInvalidEmail] = useState(false)
+  const [emailSent, setEmailSent] = useState(false)
 
   useEffect(() => {
     if (authContext) router.push("/")
@@ -22,6 +23,8 @@ export default function Login() {
     setIsInvalidEmail(!validMail)
     if (!validMail) return
 
+    setEmailSent(true)
+
     let { error } = await supabase.auth.signInWithOtp({
       email: email,
       options: {
@@ -29,7 +32,11 @@ export default function Login() {
         shouldCreateUser: true,
       },
     })
-    if (error) throw error
+
+    if (error) {
+      setEmailSent(false)
+      throw error
+    }
   }
 
   return (
@@ -41,9 +48,18 @@ export default function Login() {
         <div className={styles.card}>
           <h1>Login</h1>
 
-          <input id={styles.email} type="text" placeholder="Email" />
-          { isInvalidEmail && <span className={styles.error}>Invalid email (Make sure this is your school email)</span> }
-          <button id={styles.submit} onClick={login}>Send email</button>
+          { emailSent ? (
+            <>
+              <span className={styles.success}>Email sent! Check your inbox and click the link to login.</span>
+              <button id={styles.submit} onClick={() => setEmailSent(false)}>Change email</button>
+            </>
+          ) : (
+            <>
+              <input id={styles.email} type="text" placeholder="Email" />
+              { isInvalidEmail && <span className={styles.error}>Invalid email (Make sure this is your school email)</span> }
+              <button id={styles.submit} onClick={login}>Send email</button>
+            </>
+          ) }
         </div>
       </main>
     </>
