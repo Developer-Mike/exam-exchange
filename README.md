@@ -187,7 +187,9 @@ CREATE FUNCTION public.handle_uploaded_exam_validated()
     SECURITY DEFINER SET SEARCH_PATH = public
 AS $$
 BEGIN
-    IF NEW.validated THEN 
+    IF NOT (
+        SELECT validated FROM public.uploaded_exams WHERE id = NEW.id
+    ) AND NEW.validated THEN 
         -- Add one credit
         UPDATE public.students
         SET credits = credits + 1
@@ -199,7 +201,7 @@ END;
 $$;
 
 CREATE TRIGGER on_uploaded_exams_updated
-    AFTER UPDATE
+    BEFORE UPDATE
     ON public.uploaded_exams
     FOR EACH ROW EXECUTE PROCEDURE public.handle_uploaded_exam_validated();
 ```
