@@ -42,8 +42,8 @@ export default function Login() {
           <h1>Login</h1>
 
           <input id={styles.email} type="text" placeholder="Email" />
-          { isInvalidEmail && <span className={styles.error}>Invalid email</span> }
-          <button onClick={login}>Login</button>
+          { isInvalidEmail && <span className={styles.error}>Invalid email (Make sure this is your school email)</span> }
+          <button id={styles.submit} onClick={login}>Send email</button>
         </div>
       </main>
     </>

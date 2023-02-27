@@ -3,7 +3,11 @@ body {
 }
 
 button {
+  cursor: pointer;
+  
+  color: $on-accent-color;
   background-color: $accent-color;
+
   padding: 5px 10px;
   border-radius: 5px;
   border: 0;
