@@ -1,30 +1,12 @@
 import styles from '@/styles/Navbar.module.scss'
 import { schoolName } from "@/config"
-import { useSession } from "@/pages/_app"
 import { supabase } from "@/lib/supabase"
 import { getAvatar, getFirstName } from "@/utils/user-helper"
 import { useEffect, useState } from "react"
+import { useAuthContext } from './AuthContext'
 
 export default function Navbar() {
-  const sessionContext = useSession()
-  const [username, setUsername] = useState<string | null>(null)
-  const [credits, setCredits] = useState<number | null>(null)
-
-  useEffect(() => { (async () => {
-    if (!sessionContext.session || username || credits) return
-    let user = sessionContext.session?.user
-
-    setUsername(getFirstName(user?.email ?? ""))
-
-    let { data, error, status } = await supabase
-      .from("students")
-      .select("credits")
-      .eq("id", user?.id)
-      .single()
-    if (error && status !== 406) throw error
-
-    setCredits(data?.credits ?? 0)
-  })() }, [sessionContext.session])
+  const authContext = useAuthContext()
 
   const expandDropdown = () => {
     let dropdown = document.getElementById(styles.dropdown)
@@ -43,13 +25,13 @@ export default function Navbar() {
       </div>
 
       <div id={styles.account}>
-        { sessionContext.session && username && credits ? (
+        { authContext ? (
           <div id={styles.user} onClick={expandDropdown}>
             <div id={styles.userDetails}>
-              <img id={styles.avatar} src={getAvatar(username)} alt="Avatar" />
+              <img id={styles.avatar} src={authContext.avatar} alt="Avatar" />
               <div>
-                <strong>{username}</strong><br/>
-                <span id={styles.balance}>{credits}<img id={styles.coin} src="/coin.svg" alt="Coin" /></span>
+                <strong>{authContext.username}</strong><br/>
+                <span id={styles.balance}>{authContext.credits}<img id={styles.coin} src="/coin.svg" alt="Coin" /></span>
               </div>
               <span id={styles.accountDropdownArrow} className="material-symbols-outlined">expand_more</span>
             </div>

@@ -1,33 +1,34 @@
 import Head from 'next/head'
 import styles from '@/styles/Login.module.scss'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { isEmailValid } from '@/utils/user-helper'
 import { supabase } from '@/lib/supabase'
-import { useSession } from './_app'
 import { useRouter } from 'next/router'
+import { useAuthContext } from '@/components/AuthContext'
 
 export default function Login() {
   const router = useRouter()
-  const sessionContext = useSession()
+  const authContext = useAuthContext()
   const [isInvalidEmail, setIsInvalidEmail] = useState(false)
 
-  if (sessionContext.session) router.push("/")
+  useEffect(() => {
+    if (authContext) router.push("/")
+  }, [authContext])
   
   async function login() {
-    let email = (document.getElementById("email") as HTMLInputElement).value
+    let email = (document.getElementById(styles.email) as HTMLInputElement).value
 
     let validMail = isEmailValid(email)
     setIsInvalidEmail(!validMail)
     if (!validMail) return
 
-    let { data, error } = await supabase.auth.signInWithOtp({
+    let { error } = await supabase.auth.signInWithOtp({
       email: email,
       options: {
         emailRedirectTo: window.location.origin,
         shouldCreateUser: true,
       },
     })
-
     if (error) throw error
   }
 
@@ -37,11 +38,13 @@ export default function Login() {
         <title>Exam Exchange - Login</title>
       </Head>
       <main>
-        <h1>Login</h1>
+        <div className={styles.card}>
+          <h1>Login</h1>
 
-        <input id={styles.email} type="text" placeholder="Email" />
-        { isInvalidEmail && <span className={styles.error}>Invalid email</span> }
-        <button onClick={login}>Login</button>
+          <input id={styles.email} type="text" placeholder="Email" />
+          { isInvalidEmail && <span className={styles.error}>Invalid email</span> }
+          <button onClick={login}>Login</button>
+        </div>
       </main>
     </>
   )
