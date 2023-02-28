@@ -1,0 +1,86 @@
+.uploadContainer {
+  display: flex;
+
+  width: 100%;
+  min-height: min-content;
+}
+
+.uploadDetailsContainer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  margin: 10px;
+  padding: 10px;
+}
+
+.uploadImagesContainer {
+  display: flex;
+  flex-direction: column;
+
+  width: 40%;
+  height: min-content;
+  padding: 5px 0;
+
+  background-color: $overlay-color;
+  border: 2px dashed rgba($on-surface-color, 0.3);
+  border-radius: 5px;
+
+  margin: 10px;
+
+  .uploadedPage {
+    position: relative;
+
+    flex: 1;
+    margin: 5px 10px;
+
+    .deleteImage {
+      position: absolute;
+      top: 0;
+      right: 0;
+
+      padding: 5px;
+      margin: 10px;
+
+      background-color: $surface-color;
+      border-radius: 50%;
+
+      user-select: none;
+      cursor: pointer;
+
+      &:hover {
+        background-color: rgba($surface-color, 0.9);
+      }
+    }
+
+    img {
+      border-radius: 5px;
+      width: 100%;
+    }
+  }
+
+  .uploadNewPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    aspect-ratio: 2/3;
+
+    * {
+      cursor: pointer;
+    }
+
+    span {
+      font-size: 4rem;
+    }
+
+    label {
+      font-size: 1.1rem;
+    }
+
+    input {
+      display: none;
+    }
+  }
+}

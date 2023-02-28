@@ -10,12 +10,12 @@ interface AuthValues {
   avatar: string,
   credits: number
 }
-const SessionContext = createContext<AuthValues | null>(null)
+const SessionContext = createContext<AuthValues | null | undefined>(undefined)
 
 export default function AuthContext({ children }: { 
   children: React.ReactNode 
 }) {
-  const [authValues, setAuthValues] = useState<AuthValues | null>(null)
+  const [authValues, setAuthValues] = useState<AuthValues | null | undefined>(undefined)
 
   const updateSession = async (session: AuthSession | null) => {
     if (!session) {

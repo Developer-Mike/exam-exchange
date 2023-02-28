@@ -13,6 +13,15 @@ export default function Navbar() {
     dropdown && dropdown.classList.toggle(styles.expanded)
   }
 
+  useEffect(() => {
+    document.addEventListener("click", (e) => {
+      if (document.getElementById(styles.user)?.contains(e.target as Node)) return
+      
+      let dropdown = document.getElementById(styles.dropdown)
+      dropdown && dropdown.classList.remove(styles.expanded)
+    })
+  }, [])
+
   return (
     <div id={styles.navbar}>
       <a href="/" id={styles.logo}>

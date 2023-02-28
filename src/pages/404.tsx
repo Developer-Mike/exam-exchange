@@ -7,10 +7,8 @@ export default function NotFound() {
       <Head>
         <title>Exam Exchange - 404</title>
       </Head>
-      <main>
-        <div className="fullscreen">
-          <h1>404</h1>
-        </div>
+      <main className="fullscreen">
+        <h1>404</h1>
       </main>
     </>
   )
