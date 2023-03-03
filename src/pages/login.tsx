@@ -5,8 +5,11 @@ import { isEmailValid } from '@/utils/user-helper'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/router'
 import { useAuthContext } from '@/components/AuthContext'
+import useTranslation from 'next-translate/useTranslation'
 
 export default function Login() {
+  const { t } = useTranslation('login')
+
   const router = useRouter()
   const authContext = useAuthContext()
   const [isInvalidEmail, setIsInvalidEmail] = useState(false)
@@ -41,23 +44,20 @@ export default function Login() {
 
   return (
     <>
-      <Head>
-        <title>Exam Exchange - Login</title>
-      </Head>
       <main className="fullscreen">
         <div className={styles.card}>
-          <h1>Login</h1>
+          <h1>{t("login")}</h1>
 
           { emailSent ? (
             <>
-              <span className={styles.success}>Email sent! Check your inbox and click the link to login.</span>
-              <button id={styles.submit} onClick={() => setEmailSent(false)}>Change email</button>
+              <span className={styles.success}>{t("emailSent")}</span>
+              <button id={styles.submit} onClick={() => setEmailSent(false)}>{t("changeEmail")}</button>
             </>
           ) : (
             <>
-              <input id={styles.email} type="text" placeholder="Email" />
-              { isInvalidEmail && <span className={styles.error}>Invalid email (Make sure this is your school email)</span> }
-              <button id={styles.submit} onClick={login}>Send email</button>
+              <input id={styles.email} type="text" placeholder={t("email")} />
+              { isInvalidEmail && <span className={styles.error}>{t("invalidEmail")}</span> }
+              <button id={styles.submit} onClick={login}>{t("sendEmail")}</button>
             </>
           ) }
         </div>

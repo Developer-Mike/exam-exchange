@@ -3,8 +3,11 @@ import styles from "@/styles/Upload.module.scss"
 import { useAuthContext } from "@/components/AuthContext"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
+import useTranslation from "next-translate/useTranslation"
 
 export default function Upload() {
+  const { t } = useTranslation("upload")
+
   const router = useRouter()
   const authContext = useAuthContext()
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
@@ -45,13 +48,10 @@ export default function Upload() {
 
   return (
     <>
-      <Head>
-        <title>Exam Exchange - Upload</title>
-      </Head>
       <main>
         <div className={styles.uploadContainer}>
           <div className={styles.uploadDetailsContainer}>
-            <h1>Upload</h1>
+            <h1>{t("upload")}</h1>
           </div>
           <div className={styles.uploadImagesContainer}>
             { uploadedFiles.map((image, index) => (
@@ -65,7 +65,7 @@ export default function Upload() {
               <input id="file" name="image" type="file" accept="image/*" onChange={fileUploaded}/>
 
               <span className="material-symbols-outlined" onClick={openFilePicker}>upload</span>
-              <label htmlFor="file">Upload Image</label>
+              <label htmlFor="file">{t("uploadImage")}</label>
             </div>
           </div>
         </div>

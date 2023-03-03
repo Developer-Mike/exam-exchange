@@ -1,0 +1,8 @@
+{
+    "login": "Login",
+    "email": "Email",
+    "invalidEmail": "Invalid email (Make sure this is your school email)",
+    "sendEmail": "Send email",
+    "emailSent": "Email sent! Check your inbox and click the link to login.",
+    "changeEmail": "Change email"
+}

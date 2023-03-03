@@ -12,14 +12,5 @@ export default function Logout() {
     router.push("/")
   })() })
   
-  return (
-    <>
-      <Head>
-        <title>Exam Exchange - Logout</title>
-      </Head>
-      <main className="fullscreen">
-       Logging Out...
-      </main>
-    </>
-  )
+  return <></>
 }
