@@ -50,9 +50,6 @@ export default function Upload() {
     <>
       <main>
         <div className={styles.uploadContainer}>
-          <div className={styles.uploadDetailsContainer}>
-            <h1>{t("upload")}</h1>
-          </div>
           <div className={styles.uploadImagesContainer}>
             { uploadedFiles.map((image, index) => (
               <div key={index} className={styles.uploadedPage}>
@@ -67,6 +64,9 @@ export default function Upload() {
               <span className="material-symbols-outlined" onClick={openFilePicker}>upload</span>
               <label htmlFor="file">{t("uploadImage")}</label>
             </div>
+          </div>
+          <div className={styles.uploadDetailsContainer}>
+            <h1>{t("upload")}</h1>
           </div>
         </div>
       </main>

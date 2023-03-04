@@ -1,5 +1,9 @@
 #navbar {
   display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
+  background-color: $surface-color;
 
   & > * {
     z-index: 10;
@@ -22,6 +26,20 @@
       color: $on-surface-color;
       margin: 0;
     }
+  }
+
+  #dropdownButton {
+    display: none;
+    align-self: center;
+    margin-left: auto;
+    margin-right: 20px;
+
+    font-size: 7.5vw;
+  }
+
+  #collapsible {
+    display: flex;
+    flex: 1;
   }
 
   #links {
@@ -147,6 +165,49 @@
 
       &:hover, &:has(.expanded) {
         background-color: $surface-color-hover;
+      }
+    }
+  }
+}
+
+@media (max-width: 750px) {
+  #navbar {
+    #logo {
+      font-size: 3vw;
+    }
+
+    #dropdownButton {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #collapsible {
+      display: none;
+
+      border-top: 2px solid $accent-color;
+      border-bottom: 2px solid $accent-color;
+      border-radius: 0px 0px 8px 8px;
+
+      box-shadow: $overlay-color 0px 25px 20px -20px;
+
+      flex-direction: column;
+      flex-basis: 100%;
+
+      &.expanded {
+        display: flex;
+
+        #links {
+          flex-direction: column;
+
+          margin: 0 30px;
+          padding: 10px;
+          border-bottom: 2px dashed $accent-color;
+        }
+
+        #account {
+          margin: 10px;
+        }
       }
     }
   }

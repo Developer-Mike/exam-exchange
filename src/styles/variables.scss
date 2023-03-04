@@ -5,3 +5,13 @@ $overlay-color: rgba(0, 0, 0, 0.1);
 $accent-color: #1bd96a;
 $on-accent-color: #000000;
 $error-color: #ff0000;
+
+@media (prefers-color-scheme: dark) {
+  $surface-color: #000;
+  $surface-color-hover: #1a1a1a;
+  $on-surface-color: #fff;
+  $overlay-color: rgba(255, 255, 255, 0.1);
+  $accent-color: #1bd96a;
+  $on-accent-color: #000000;
+  $error-color: #ff0000;
+}
