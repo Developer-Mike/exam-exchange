@@ -42,6 +42,15 @@ export default function Upload() {
     setUploadedFiles(newUploadedFiles)
   }
 
+  const moveUploadedFile = (index: number, up: boolean) => {
+    let newUploadedFiles = [...uploadedFiles]
+    const file = newUploadedFiles[index]
+    newUploadedFiles.splice(index, 1)
+    newUploadedFiles.splice(up ? index - 1 : index + 1, 0, file)
+
+    setUploadedFiles(newUploadedFiles)
+  }
+
   useEffect(() => {
     if (authContext != undefined && authContext == null) router.push("/login")
   }, [authContext])
@@ -53,8 +62,12 @@ export default function Upload() {
           <div className={styles.uploadImagesContainer}>
             { uploadedFiles.map((image, index) => (
               <div key={index} className={styles.uploadedPage}>
-                <span className={`${styles.deleteImage} material-symbols-outlined`} onClick={() => { removeUploadedFile(index) }}>delete</span>
                 <img src={URL.createObjectURL(image)}/>
+                <div className={styles.pageSettings}>
+                  <span className={`${styles.deleteImage} material-symbols-outlined`} onClick={() => { removeUploadedFile(index) }}>delete</span>
+                  <span className={`${styles.moveImage} material-symbols-outlined`} onClick={() => { moveUploadedFile(index, true) }}>keyboard_arrow_up</span>
+                  <span className={`${styles.moveImage} material-symbols-outlined`} onClick={() => { moveUploadedFile(index, false) }}>keyboard_arrow_down</span>
+                </div>
               </div>
             ))}
 
@@ -67,6 +80,12 @@ export default function Upload() {
           </div>
           <div className={styles.uploadDetailsContainer}>
             <h1>{t("upload")}</h1>
+
+            <input id={styles.topic} type="text" placeholder={t("topic")}/>
+            <input id={styles.subject} type="text" placeholder={t("subject")}/>
+            <input id={styles.teacher} type="text" placeholder={t("teacher")}/>
+            <input id={styles.class} type="text" placeholder={t("class")}/>
+            <input id={styles.issueYear} type="text" placeholder={t("yearIssued")}/>
           </div>
         </div>
       </main>

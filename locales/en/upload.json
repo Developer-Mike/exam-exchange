@@ -1,4 +1,9 @@
 {
     "upload": "Upload",
-    "uploadImage": "Upload Image"
+    "uploadImage": "Upload Image",
+    "topic": "Topic",
+    "subject": "Subject",
+    "teacher": "Teacher",
+    "class": "Class",
+    "yearIssued": "Issue Year"
 }

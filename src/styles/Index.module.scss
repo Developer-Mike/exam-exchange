@@ -2,7 +2,7 @@
   position: relative;
 
   height: 3rem;
-  line-height: 2.75rem;
+  line-height: 3rem;
   overflow: hidden;
 
   .textHolder {
@@ -22,7 +22,7 @@
 
     .textItem {
       display: inline-block;
-      font-size: min(4vw, 2.75rem);
+      font-size: min(5vw, 2.75rem);
       font-weight: bold;
       text-align: center;
       white-space: nowrap;
