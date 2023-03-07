@@ -2,8 +2,12 @@
     "upload": "Upload",
     "uploadImage": "Upload Image",
     "topic": "Topic",
+    "topicExample": "Molecular Genetics",
     "subject": "Subject",
+    "subjectExample": "Biology",
     "teacher": "Teacher",
+    "teacherExample": "DPO",
     "class": "Class",
+    "classExample": "N1A",
     "yearIssued": "Issue Year"
 }

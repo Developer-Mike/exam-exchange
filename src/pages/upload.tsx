@@ -1,9 +1,10 @@
-import Head from "next/head"
 import styles from "@/styles/Upload.module.scss"
 import { useAuthContext } from "@/components/AuthContext"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
 import useTranslation from "next-translate/useTranslation"
+import { partialClassRegex, partialSubjectRegex, partialTeacherRegex, partialTopicRegex, partialYearRegex } from "@/config"
+import RegexInput from "@/components/RegexInput"
 
 export default function Upload() {
   const { t } = useTranslation("upload")
@@ -81,11 +82,11 @@ export default function Upload() {
           <div className={styles.uploadDetailsContainer}>
             <h1>{t("upload")}</h1>
 
-            <input id={styles.topic} type="text" placeholder={t("topic")}/>
-            <input id={styles.subject} type="text" placeholder={t("subject")}/>
-            <input id={styles.teacher} type="text" placeholder={t("teacher")}/>
-            <input id={styles.class} type="text" placeholder={t("class")}/>
-            <input id={styles.issueYear} type="text" placeholder={t("yearIssued")}/>
+            <RegexInput id={styles.topic} label={t("topic")} regex={partialTopicRegex} example={t("topicExample")}/>
+            <RegexInput id={styles.subject} label={t("subject")} regex={partialSubjectRegex} example={t("subjectExample")}/>
+            <RegexInput id={styles.teacher} label={t("teacher")} regex={partialTeacherRegex} example={t("teacherExample")}/>
+            <RegexInput id={styles.class} label={t("class")} regex={partialClassRegex} example={t("classExample")}/>
+            <RegexInput id={styles.issueYear} label={t("yearIssued")} regex={partialYearRegex} example={new Date().getFullYear().toString()}/>
           </div>
         </div>
       </main>

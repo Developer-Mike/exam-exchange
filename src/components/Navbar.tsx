@@ -1,8 +1,6 @@
 import styles from '@/styles/Navbar.module.scss'
 import { schoolName } from "@/config"
-import { supabase } from "@/lib/supabase"
-import { getAvatar, getFirstName } from "@/utils/user-helper"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useAuthContext } from './AuthContext'
 
 export default function Navbar() {
