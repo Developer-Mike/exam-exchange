@@ -11,3 +11,6 @@ export const classRegex = /^[NK][1-4][A-Z]$/
 export const partialClassRegex = /^(?:[NK]|$)(?:[1-4]|$)(?:[A-Z]|$)$/
 export const yearRegex = /^20[0-9]{2}$/
 export const partialYearRegex = /^(?:2|$)(?:0|$)([0-9]{0,2})$/
+
+export const maxImageCount = 10
+export const maxImageSize = 10 * 1024 * 1024 // 10 MB

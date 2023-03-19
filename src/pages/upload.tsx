@@ -3,7 +3,7 @@ import { useAuthContext } from "@/components/AuthContext"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
 import useTranslation from "next-translate/useTranslation"
-import { partialClassRegex, partialSubjectRegex, partialTeacherRegex, partialTopicRegex, partialYearRegex } from "@/config"
+import * as config from "@/config"
 import RegexInput from "@/components/RegexInput"
 
 export default function Upload() {
@@ -66,6 +66,24 @@ export default function Upload() {
     setUploadedFiles(newUploadedFiles)
   }
 
+  const upload = () => {
+    const topic = document.getElementById(styles.topic) as HTMLInputElement
+    const subject = document.getElementById(styles.subject) as HTMLInputElement
+    const teacher = document.getElementById(styles.teacher) as HTMLInputElement
+    const class_ = document.getElementById(styles.class) as HTMLInputElement
+    const issueYear = document.getElementById(styles.issueYear) as HTMLInputElement
+
+    console.log(issueYear.valueAsNumber)
+
+    if (!(config.topicRegex.test(topic.value) && config.subjectRegex.test(subject.value) && config.teacherRegex.test(teacher.value) && config.classRegex.test(class_.value) && config.yearRegex.test(issueYear.value)
+      && uploadedFiles.length > 0 && uploadedFiles.length <= config.maxImageCount && uploadedFiles.every((file) => file.size <= config.maxImageSize) && issueYear.value <= new Date().getFullYear().toString()))
+      return
+
+    // TODO: Upload
+
+    router.push("/upload-success")
+  }
+
   useEffect(() => {
     if (authContext != undefined && authContext == null) router.push("/login")
   }, [authContext])
@@ -96,13 +114,21 @@ export default function Upload() {
           <div className={styles.uploadDetailsContainer}>
             <h1>{t("upload")}</h1>
 
-            <RegexInput id={styles.topic} label={t("topic")} regex={partialTopicRegex} example={t("topicExample")}/>
-            <RegexInput id={styles.subject} label={t("subject")} regex={partialSubjectRegex} example={t("subjectExample")}/>
-            <RegexInput id={styles.teacher} label={t("teacher")} regex={partialTeacherRegex} example={t("teacherExample")}/>
-            <RegexInput id={styles.class} label={t("class")} regex={partialClassRegex} example={t("classExample")}/>
-            <RegexInput id={styles.issueYear} label={t("yearIssued")} regex={partialYearRegex} example={new Date().getFullYear().toString()}/>
+            <RegexInput id={styles.topic} label={t("topic")} regex={config.partialTopicRegex} example={t("topicExample")}/>
+            <RegexInput id={styles.subject} label={t("subject")} regex={config.partialSubjectRegex} example={t("subjectExample")}/>
+            <RegexInput id={styles.teacher} label={t("teacher")} regex={config.partialTeacherRegex} example={t("teacherExample")}/>
+            <RegexInput id={styles.class} label={t("class")} regex={config.partialClassRegex} example={t("classExample")}/>
+            <RegexInput id={styles.issueYear} label={t("yearIssued")} regex={config.partialYearRegex} example={new Date().getFullYear().toString()}/>
           </div>
         </div>
+        <button id={styles.uploadButton} onClick={upload}>
+          {t("uploadNow")}
+
+          <div id={styles.creditReward}>
+            +1
+            <img src="coin-inverted.svg"/>
+          </div>
+        </button>
       </main>
     </>
   )

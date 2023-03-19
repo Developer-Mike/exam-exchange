@@ -1,0 +1,16 @@
+<svg version="1.1" viewBox="0.0 0.0 512.0 512.0" fill="none" stroke="none" stroke-linecap="square" stroke-miterlimit="10" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+    <clipPath id="p.0">
+        <path d="m0 0l512.0 0l0 512.0l-512.0 0l0 -512.0z" clip-rule="nonzero"/>
+    </clipPath>
+    <g clip-path="url(#p.0)">
+        <circle fill="#ffffff" r="256" cx="256" cy="256"/>
+        <g transform="rotate(45 256 256)">
+            <rect width="200" height="200" x="256" y="256" style="
+                fill: #1bd96a;
+                transform-box: fill-box;
+                transform-origin: center;
+                transform: translate(-50%, -50%);
+            " />
+        </g>
+    </g>
+</svg>
