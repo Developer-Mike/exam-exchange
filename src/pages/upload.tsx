@@ -17,23 +17,37 @@ export default function Upload() {
     document?.getElementById("file")?.click()
   }
 
+  const convertFile = (file: File) => {
+    return new Promise((resolve, reject) => {
+      const image = new Image()
+      image.src = URL.createObjectURL(file)
+
+      image.onload = () => {
+        const canvas = document.createElement("canvas")
+        canvas.width = image.naturalWidth
+        canvas.height = image.naturalHeight
+        canvas?.getContext("2d")?.drawImage(image, 0, 0)
+
+        canvas.toBlob((blob) => {
+          if (!blob) return
+          resolve(new File([blob], `page${uploadedFiles.length}.webp`, { type: blob.type }))
+        }, "image/webp")
+      }
+    })
+  }
+
   const fileUploaded = (e: any) => {
-    const file = e.target.files[0]
-    e.target.files = new DataTransfer().files
+    let promises = []
 
-    const image = new Image()
-    image.src = URL.createObjectURL(file)
-    image.onload = () => {
-      const canvas = document.createElement("canvas")
-      canvas.width = image.naturalWidth
-      canvas.height = image.naturalHeight
-      canvas?.getContext("2d")?.drawImage(image, 0, 0)
-
-      canvas.toBlob((blob) => {
-        if (!blob) return
-        setUploadedFiles(uploadedFiles.concat(new File([blob], `page${uploadedFiles.length}.webp`, { type: blob.type })))
-      }, "image/webp")
+    for (let file of e.target.files) {
+      promises.push(convertFile(file))
     }
+
+    Promise.all(promises).then((files) => {
+      setUploadedFiles(uploadedFiles.concat(files as File[]))
+    })
+
+    e.target.files = new DataTransfer().files
   }
 
   const removeUploadedFile = (index: number) => {
@@ -73,7 +87,7 @@ export default function Upload() {
             ))}
 
             <div className={styles.uploadNewPage}>
-              <input id="file" name="image" type="file" accept="image/*" onChange={fileUploaded}/>
+              <input id="file" name="image" type="file" accept="image/*" multiple={true} onChange={fileUploaded}/>
 
               <span className="material-symbols-outlined" onClick={openFilePicker}>upload</span>
               <label htmlFor="file">{t("uploadImage")}</label>
