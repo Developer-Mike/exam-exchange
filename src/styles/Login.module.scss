@@ -12,12 +12,16 @@
 
   border-radius: 8px;
   background-color: $surface-color;
-  box-shadow: 0 0 8px $overlay-color;
+  box-shadow: 0 0 8px rgba($on-surface-color, 0.2);
 }
 
 #email {
+  width: 25vw;
+  padding: 5px 0;
+
   padding-inline: 5px;
   font-size: 1.5rem;
+  text-align: center;
 
   border-radius: 5px;
   border: 2px solid #e0e0e0;
