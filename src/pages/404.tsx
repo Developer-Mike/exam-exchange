@@ -1,4 +1,3 @@
-import Head from "next/head"
 import styles from '@/styles/404.module.scss'
 
 export default function NotFound() {

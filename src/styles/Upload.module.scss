@@ -50,6 +50,27 @@
       font-size: 1.5rem;
     }
   }
+
+  #legalAgreementContainer {
+    display: flex;
+    align-items: center;
+
+    margin-top: 20px;
+
+    a {
+      font-size: 1.5rem;
+      color: $on-surface-color;
+      text-decoration-color: $accent-color;
+    }
+
+    #legalAgreement {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+
+      accent-color: $accent-color;
+    }
+  }
 }
 
 .uploadImagesContainer {
@@ -94,9 +115,9 @@
         background-color: $error-color;
       }
 
-      .moveImage {
-        color: $on-accent-color;
-        background-color: $accent-color;
+      *:not(.deleteImage) {
+        color: $on-surface-color;
+        border-bottom: 1px solid rgba($on-surface-color, 0.5);
       }
     }
   }
@@ -152,7 +173,7 @@
     align-items: center;
 
     margin-left: 10px;
-    color: $surface-color;
+    color: white;
     
     img {
       width: 25px;

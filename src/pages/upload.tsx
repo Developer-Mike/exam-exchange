@@ -5,6 +5,7 @@ import { useRouter } from "next/router"
 import useTranslation from "next-translate/useTranslation"
 import * as config from "@/config"
 import RegexInput from "@/components/RegexInput"
+import { webpFromSource } from "@/utils/image-helper"
 
 export default function Upload() {
   const { t } = useTranslation("upload")
@@ -17,30 +18,11 @@ export default function Upload() {
     document?.getElementById("file")?.click()
   }
 
-  const convertFile = (file: File) => {
-    return new Promise((resolve, reject) => {
-      const image = new Image()
-      image.src = URL.createObjectURL(file)
-
-      image.onload = () => {
-        const canvas = document.createElement("canvas")
-        canvas.width = image.naturalWidth
-        canvas.height = image.naturalHeight
-        canvas?.getContext("2d")?.drawImage(image, 0, 0)
-
-        canvas.toBlob((blob) => {
-          if (!blob) return
-          resolve(new File([blob], `page${uploadedFiles.length}.webp`, { type: blob.type }))
-        }, "image/webp")
-      }
-    })
-  }
-
   const fileUploaded = (e: any) => {
     let promises = []
 
     for (let file of e.target.files) {
-      promises.push(convertFile(file))
+      promises.push(webpFromSource(document, file));
     }
 
     Promise.all(promises).then((files) => {
@@ -72,8 +54,9 @@ export default function Upload() {
     const teacher = document.getElementById(styles.teacher) as HTMLInputElement
     const class_ = document.getElementById(styles.class) as HTMLInputElement
     const issueYear = document.getElementById(styles.issueYear) as HTMLInputElement
+    const legalAgreement = document.getElementById(styles.legalAgreement) as HTMLInputElement
 
-    console.log(issueYear.valueAsNumber)
+    if (!legalAgreement.checked) return
 
     if (!(config.topicRegex.test(topic.value) && config.subjectRegex.test(subject.value) && config.teacherRegex.test(teacher.value) && config.classRegex.test(class_.value) && config.yearRegex.test(issueYear.value)
       && uploadedFiles.length > 0 && uploadedFiles.length <= config.maxImageCount && uploadedFiles.every((file) => file.size <= config.maxImageSize) && issueYear.value <= new Date().getFullYear().toString()))
@@ -119,6 +102,11 @@ export default function Upload() {
             <RegexInput id={styles.teacher} label={t("teacher")} regex={config.partialTeacherRegex} example={t("teacherExample")}/>
             <RegexInput id={styles.class} label={t("class")} regex={config.partialClassRegex} example={t("classExample")}/>
             <RegexInput id={styles.issueYear} label={t("yearIssued")} regex={config.partialYearRegex} example={new Date().getFullYear().toString()}/>
+
+            <div id={styles.legalAgreementContainer}>
+              <input id={styles.legalAgreement} type="checkbox"/>
+              <label htmlFor={styles.legalAgreement}><a href="/legal/terms-of-service" target="_blank">{t("legalAgreement")}</a></label>
+            </div>
           </div>
         </div>
         <button id={styles.uploadButton} onClick={upload}>

@@ -10,5 +10,6 @@
     "class": "Class",
     "classExample": "N1A",
     "yearIssued": "Issue Year",
-    "uploadNow": "Upload"
+    "uploadNow": "Upload",
+    "legalAgreement": "By uploading this exam, you agree to the terms of service of the site."
 }
