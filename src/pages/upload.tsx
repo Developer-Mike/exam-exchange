@@ -38,9 +38,6 @@ export default function Upload() {
     const teacher = document.getElementById(styles.teacher) as HTMLInputElement
     const class_ = document.getElementById(styles.class) as HTMLInputElement
     const issueYear = document.getElementById(styles.issueYear) as HTMLInputElement
-    const legalAgreement = document.getElementById(styles.legalAgreement) as HTMLInputElement
-
-    if (!legalAgreement.checked) return
 
     if (!(config.topicRegex.test(topic.value) && config.subjectRegex.test(subject.value) && config.teacherRegex.test(teacher.value) && config.classRegex.test(class_.value) && config.yearRegex.test(issueYear.value)
       && uploadedPages.length > 0 && uploadedPages.length <= config.maxImageCount && uploadedPages.every((page) => page.file.size <= config.maxImageSize) && issueYear.value <= new Date().getFullYear().toString()))
@@ -60,14 +57,14 @@ export default function Upload() {
       <main>
         <div className={styles.uploadContainer}>
           <div className={styles.uploadImagesContainer}>
-            { uploadedPages.map((page, index) => <PageComponent index={index} page={page} uploadedPages={uploadedPages} setUploadedPages={setUploadedPages} />)}
-
             <div className={styles.uploadNewPage}>
               <input id="file" name="image" type="file" accept="image/*" multiple={true} onChange={fileUploaded}/>
 
               <span className="material-symbols-outlined" onClick={openFilePicker}>upload</span>
               <label htmlFor="file">{t("uploadImage")}</label>
             </div>
+
+            { uploadedPages.map((page, index) => <PageComponent index={index} page={page} uploadedPages={uploadedPages} setUploadedPages={setUploadedPages} />)}
           </div>
           <div className={styles.uploadDetailsContainer}>
             <h1>{t("upload")}</h1>
@@ -77,21 +74,20 @@ export default function Upload() {
             <RegexInput id={styles.teacher} label={t("teacher")} regex={config.partialTeacherRegex} example={t("teacherExample")}/>
             <RegexInput id={styles.class} label={t("class")} regex={config.partialClassRegex} example={t("classExample")}/>
             <RegexInput id={styles.issueYear} label={t("yearIssued")} regex={config.partialYearRegex} example={new Date().getFullYear().toString()}/>
-
-            <div id={styles.legalAgreementContainer}>
-              <input id={styles.legalAgreement} type="checkbox"/>
-              <label htmlFor={styles.legalAgreement}><a href="/legal/terms-of-service" target="_blank">{t("legalAgreement")}</a></label>
-            </div>
           </div>
         </div>
-        <button id={styles.uploadButton} onClick={upload}>
-          {t("uploadNow")}
+        <div className={styles.stickyBottom}>
+          <a id={styles.legalAgreement} href="/legal/terms-of-service" target="_blank">{t("legalAgreement")}</a>
 
-          <div id={styles.creditReward}>
-            +1
-            <img src="coin-inverted.svg"/>
-          </div>
-        </button>
+          <button id={styles.uploadButton} onClick={upload}>
+            {t("uploadNow")}
+
+            <div id={styles.creditReward}>
+              +1
+              <img src="coin-inverted.svg"/>
+            </div>
+          </button>
+        </div>
       </main>
     </>
   )

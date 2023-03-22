@@ -57,6 +57,7 @@ export default function PageComponent({ index, page, uploadedPages, setUploadedP
         <span className={`${styles.deleteImage} material-symbols-outlined`} onClick={() => { removeUploadedFile(index) }}>delete</span>
         <span className={`${styles.moveImage} material-symbols-outlined`} onClick={() => { moveUploadedFile(index, true) }}>keyboard_arrow_up</span>
         <span className={`${styles.moveImage} material-symbols-outlined`} onClick={() => { moveUploadedFile(index, false) }}>keyboard_arrow_down</span>
+        <span className={`${styles.censorImage} material-symbols-outlined`} onClick={() => {  }}>blur_on</span>
       </div>
     </div>
   )
