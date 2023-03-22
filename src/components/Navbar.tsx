@@ -42,7 +42,7 @@ export default function Navbar() {
           { authContext ? (
             <div id={styles.user} onClick={expandProfileDropdown}>
               <div id={styles.userDetails}>
-                <img id={styles.avatar} src={"school-icon.svg" /*authContext.avatar*/} alt="Avatar" />
+                <img id={styles.avatar} src={"/school-icon.svg" /*authContext.avatar*/} alt="Avatar" />
                 <div>
                   <strong>{authContext.username}</strong><br/>
                   <span id={styles.balance}>{authContext.credits}<img id={styles.coin} src="/coin.svg" alt="Coin" /></span>

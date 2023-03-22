@@ -1,4 +1,4 @@
-# Privacy Policity
+# Privacy Policy
 
 This Privacy Policy ("Policy") describes how we collect, use, and share information about you when you use our website ("Site"). By accessing or using our Site, you agree to be bound by this Policy. If you do not agree to this Policy, you may not use our Site.
 
