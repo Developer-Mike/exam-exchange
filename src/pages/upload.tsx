@@ -5,14 +5,14 @@ import { useRouter } from "next/router"
 import useTranslation from "next-translate/useTranslation"
 import * as config from "@/config"
 import RegexInput from "@/components/RegexInput"
-import { webpFromSource } from "@/utils/image-helper"
+import PageComponent, { ExamPage } from "@/components/ExamPage"
 
 export default function Upload() {
   const { t } = useTranslation("upload")
 
   const router = useRouter()
   const authContext = useAuthContext()
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
+  const [uploadedPages, setUploadedPages] = useState<ExamPage[]>([])
 
   const openFilePicker = () => {
     document?.getElementById("file")?.click()
@@ -22,30 +22,14 @@ export default function Upload() {
     let promises = []
 
     for (let file of e.target.files) {
-      promises.push(webpFromSource(document, file));
+      promises.push(ExamPage.fromSource(document, file));
     }
 
-    Promise.all(promises).then((files) => {
-      setUploadedFiles(uploadedFiles.concat(files as File[]))
+    Promise.all(promises).then((page) => {
+      setUploadedPages(uploadedPages.concat(page))
     })
 
     e.target.files = new DataTransfer().files
-  }
-
-  const removeUploadedFile = (index: number) => {
-    let newUploadedFiles = [...uploadedFiles]
-    newUploadedFiles.splice(index, 1)
-
-    setUploadedFiles(newUploadedFiles)
-  }
-
-  const moveUploadedFile = (index: number, up: boolean) => {
-    let newUploadedFiles = [...uploadedFiles]
-    const file = newUploadedFiles[index]
-    newUploadedFiles.splice(index, 1)
-    newUploadedFiles.splice(up ? index - 1 : index + 1, 0, file)
-
-    setUploadedFiles(newUploadedFiles)
   }
 
   const upload = () => {
@@ -59,7 +43,7 @@ export default function Upload() {
     if (!legalAgreement.checked) return
 
     if (!(config.topicRegex.test(topic.value) && config.subjectRegex.test(subject.value) && config.teacherRegex.test(teacher.value) && config.classRegex.test(class_.value) && config.yearRegex.test(issueYear.value)
-      && uploadedFiles.length > 0 && uploadedFiles.length <= config.maxImageCount && uploadedFiles.every((file) => file.size <= config.maxImageSize) && issueYear.value <= new Date().getFullYear().toString()))
+      && uploadedPages.length > 0 && uploadedPages.length <= config.maxImageCount && uploadedPages.every((page) => page.file.size <= config.maxImageSize) && issueYear.value <= new Date().getFullYear().toString()))
       return
 
     // TODO: Upload
@@ -76,16 +60,7 @@ export default function Upload() {
       <main>
         <div className={styles.uploadContainer}>
           <div className={styles.uploadImagesContainer}>
-            { uploadedFiles.map((image, index) => (
-              <div key={index} className={styles.uploadedPage}>
-                <img src={URL.createObjectURL(image)}/>
-                <div className={styles.pageSettings}>
-                  <span className={`${styles.deleteImage} material-symbols-outlined`} onClick={() => { removeUploadedFile(index) }}>delete</span>
-                  <span className={`${styles.moveImage} material-symbols-outlined`} onClick={() => { moveUploadedFile(index, true) }}>keyboard_arrow_up</span>
-                  <span className={`${styles.moveImage} material-symbols-outlined`} onClick={() => { moveUploadedFile(index, false) }}>keyboard_arrow_down</span>
-                </div>
-              </div>
-            ))}
+            { uploadedPages.map((page, index) => <PageComponent index={index} page={page} uploadedPages={uploadedPages} setUploadedPages={setUploadedPages} />)}
 
             <div className={styles.uploadNewPage}>
               <input id="file" name="image" type="file" accept="image/*" multiple={true} onChange={fileUploaded}/>
