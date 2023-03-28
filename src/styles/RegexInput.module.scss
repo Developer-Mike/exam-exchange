@@ -1,4 +1,62 @@
 .regexInputContainer {
+  position: relative;
+
   display: flex;
   flex-direction: column;
+}
+
+.regexInputLabel {
+  color: $on-surface-color;
+
+  &.invalid {
+    color: $error-color;
+  }
+}
+
+.regexInputDropdown {
+  z-index: 10;
+  position: absolute;
+  top: 100%;
+  left: 0;
+
+  min-width: 50%;
+
+  max-height: 10rem;
+  overflow: hidden auto;
+
+  display: flex;
+  flex-direction: column;
+
+  background-color: $surface-color;
+  border-radius: 8px;
+  box-shadow: rgba($on-surface-color, 0.5) 0px 6px 12px -2px;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    display: none;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba($on-surface-color, 0.5);
+    border-radius: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba($on-surface-color, 0.7);
+  }
+
+  .regexInputDropdownItem {
+    padding: 0.5rem;
+    font-size: 1.5rem;
+
+    user-select: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba($on-surface-color, 0.1);
+    }
+  }
 }

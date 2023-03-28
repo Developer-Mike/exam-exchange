@@ -6,6 +6,7 @@ import useTranslation from "next-translate/useTranslation"
 import * as config from "@/config"
 import RegexInput from "@/components/RegexInput"
 import PageComponent, { ExamPage } from "@/components/ExamPage"
+import { supabase } from "@/lib/supabase"
 
 export default function Upload() {
   const { t } = useTranslation("upload")
@@ -32,7 +33,7 @@ export default function Upload() {
     e.target.files = new DataTransfer().files
   }
 
-  const upload = () => {
+  const upload = async () => {
     const topic = document.getElementById(styles.topic) as HTMLInputElement
     const subject = document.getElementById(styles.subject) as HTMLInputElement
     const teacher = document.getElementById(styles.teacher) as HTMLInputElement
@@ -43,7 +44,28 @@ export default function Upload() {
       && uploadedPages.length > 0 && uploadedPages.length <= config.maxImageCount && uploadedPages.every((page) => page.file.size <= config.maxImageSize) && issueYear.value <= new Date().getFullYear().toString()))
       return
 
-    // TODO: Upload
+    // Show loading screen
+    // Get Teacher ID
+    // Get Subject ID
+    // Upload Exam
+    // Upload Images
+    
+    /* const { data, error } = await supabase
+      .from('uploaded_exams')
+      .insert([
+        { some_column: 'someValue', other_column: 'otherValue' },
+    ])
+    console.log(data, error)
+
+    for (let page of uploadedPages) {
+      const { data, error } = await supabase
+        .storage
+        .from('exam-images')
+        .upload(`${authContext.uid}/${data}`, await page.export(), {
+          cacheControl: '3600',
+          upsert: false
+      })
+    }*/
 
     router.push("/upload-success")
   }
@@ -69,11 +91,11 @@ export default function Upload() {
           <div className={styles.uploadDetailsContainer}>
             <h1>{t("upload")}</h1>
 
-            <RegexInput id={styles.topic} label={t("topic")} regex={config.partialTopicRegex} example={t("topicExample")}/>
-            <RegexInput id={styles.subject} label={t("subject")} regex={config.partialSubjectRegex} example={t("subjectExample")}/>
-            <RegexInput id={styles.teacher} label={t("teacher")} regex={config.partialTeacherRegex} example={t("teacherExample")}/>
-            <RegexInput id={styles.class} label={t("class")} regex={config.partialClassRegex} example={t("classExample")}/>
-            <RegexInput id={styles.issueYear} label={t("yearIssued")} regex={config.partialYearRegex} example={new Date().getFullYear().toString()}/>
+            <RegexInput id={styles.topic} label={t("topic")} partialRegex={config.partialTopicRegex} regex={config.topicRegex} example={t("topicExample")}/>
+            <RegexInput id={styles.subject} label={t("subject")} partialRegex={config.partialSubjectRegex} regex={config.subjectRegex} example={t("subjectExample")} forceSuggestion={true} dropdownSuggestions={["Biology", "Mathematics", "English", "Building"]} />
+            <RegexInput id={styles.teacher} label={t("teacher")} partialRegex={config.partialTeacherRegex} regex={config.teacherRegex} example={t("teacherExample")}/>
+            <RegexInput id={styles.class} label={t("class")} partialRegex={config.partialClassRegex} regex={config.classRegex} example={t("classExample")}/>
+            <RegexInput id={styles.issueYear} label={t("yearIssued")} partialRegex={config.partialYearRegex} regex={config.yearRegex} example={new Date().getFullYear().toString()}/>
           </div>
         </div>
         <div className={styles.stickyBottom}>

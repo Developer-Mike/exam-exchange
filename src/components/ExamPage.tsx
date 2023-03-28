@@ -2,9 +2,30 @@ import styles from "@/styles/ExamPage.module.scss"
 
 export class ExamPage {
   file: File
+  censoredRegions: number[][] = []
 
   constructor(file: File) {
     this.file = file
+  }
+
+  public async export(): Promise<File> {
+    return new Promise((resolve, reject) => {
+      const image = new Image()
+      image.src = URL.createObjectURL(this.file)
+
+      image.onload = () => {
+        const canvas = document.createElement("canvas")
+        canvas.width = image.naturalWidth
+        canvas.height = image.naturalHeight
+        canvas?.getContext("2d")?.drawImage(image, 0, 0)
+
+        canvas.toBlob(blob => {
+          if (!blob) return
+
+          resolve(new File([blob], `page.webp`, { type: blob.type }))
+        }, "image/webp", 0.5)
+      }
+    })
   }
 
   public static async fromSource(document: Document, source: MediaSource): Promise<ExamPage> {
