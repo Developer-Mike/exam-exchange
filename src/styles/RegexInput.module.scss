@@ -3,6 +3,10 @@
 
   display: flex;
   flex-direction: column;
+
+  &:focus-within > .regexInputDropdown {
+    display: flex;
+  }
 }
 
 .regexInputLabel {
@@ -24,7 +28,7 @@
   max-height: 10rem;
   overflow: hidden auto;
 
-  display: flex;
+  display: none; //flex
   flex-direction: column;
 
   background-color: $surface-color;
@@ -49,11 +53,18 @@
   }
 
   .regexInputDropdownItem {
-    padding: 0.5rem;
+    margin: 5px;
+    padding: 10px;
     font-size: 1.5rem;
 
     user-select: none;
     cursor: pointer;
+
+    border-radius: 8px;
+
+    &:focus {
+      outline: 2px solid $on-surface-color;
+    }
 
     &:hover {
       background-color: rgba($on-surface-color, 0.1);

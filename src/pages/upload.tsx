@@ -8,7 +8,10 @@ import RegexInput from "@/components/RegexInput"
 import PageComponent, { ExamPage } from "@/components/ExamPage"
 import { supabase } from "@/lib/supabase"
 
-export default function Upload() {
+export default function Upload({ subjects, teachers }: {
+  subjects: string[],
+  teachers: string[]
+}) {
   const { t } = useTranslation("upload")
 
   const router = useRouter()
@@ -71,8 +74,10 @@ export default function Upload() {
   }
 
   useEffect(() => {
-    if (authContext != undefined && authContext == null) router.push("/login")
-  }, [authContext])
+    if (authContext != undefined && authContext == null) {
+      router.push("/login")
+    }
+  })
 
   return (
     <>
@@ -92,8 +97,8 @@ export default function Upload() {
             <h1>{t("upload")}</h1>
 
             <RegexInput id={styles.topic} label={t("topic")} partialRegex={config.partialTopicRegex} regex={config.topicRegex} example={t("topicExample")}/>
-            <RegexInput id={styles.subject} label={t("subject")} partialRegex={config.partialSubjectRegex} regex={config.subjectRegex} example={t("subjectExample")} forceSuggestion={true} dropdownSuggestions={["Biology", "Mathematics", "English", "Building"]} />
-            <RegexInput id={styles.teacher} label={t("teacher")} partialRegex={config.partialTeacherRegex} regex={config.teacherRegex} example={t("teacherExample")}/>
+            <RegexInput id={styles.subject} label={t("subject")} partialRegex={config.partialSubjectRegex} regex={config.subjectRegex} example={t("subjectExample")} forceSuggestion={true} dropdownSuggestions={subjects}/>
+            <RegexInput id={styles.teacher} label={t("teacher")} partialRegex={config.partialTeacherRegex} regex={config.teacherRegex} example={t("teacherExample")} forceSuggestion={true} dropdownSuggestions={teachers}/>
             <RegexInput id={styles.class} label={t("class")} partialRegex={config.partialClassRegex} regex={config.classRegex} example={t("classExample")}/>
             <RegexInput id={styles.issueYear} label={t("yearIssued")} partialRegex={config.partialYearRegex} regex={config.yearRegex} example={new Date().getFullYear().toString()}/>
           </div>
@@ -113,4 +118,22 @@ export default function Upload() {
       </main>
     </>
   )
+}
+
+// static props
+export async function getStaticProps() {
+  const { data: subjects, error: subjectsError } = await supabase
+    .from("subjects")
+    .select("subject_name")
+
+  const { data: teachers, error: teachersError } = await supabase
+    .from("teachers")
+    .select("abbreviation, first_name, last_name")
+
+return {
+    props: {
+      subjects: subjects?.map((subject: any) => subject.subject_name) ?? [],
+      teachers: teachers?.map((teacher: any) => teacher.abbreviation) ?? [],
+    },
+  }
 }

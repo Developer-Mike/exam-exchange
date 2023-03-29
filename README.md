@@ -75,7 +75,7 @@ CREATE TRIGGER on_auth_user_created
 
 CREATE TABLE public.teachers (
     id SERIAL PRIMARY KEY,
-    validated BOOLEAN DEFAULT false,
+    validated BOOLEAN DEFAULT false NOT NULL,
     abbreviation VARCHAR(3) UNIQUE NOT NULL,
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL
@@ -97,9 +97,9 @@ WITH CHECK (
 
 CREATE TABLE public.subjects (
     id SERIAL PRIMARY KEY,
-    validated BOOLEAN DEFAULT false,
+    validated BOOLEAN DEFAULT false NOT NULL,
     subject_name TEXT NOT NULL,
-    color VARCHAR(6) NOT NULL
+    color VARCHAR(6)
 );
 ALTER TABLE public.subjects ENABLE ROW LEVEL SECURITY;
 

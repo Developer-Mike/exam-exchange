@@ -11,7 +11,7 @@ export default function RegexInput({ id, label, partialRegex, regex, example, fo
   dropdownSuggestions?: string[]
 }) {
   const [value, setValue] = useState("")
-  const [suggestions, setSuggestions] = useState<string[]>([])
+  const [suggestions, setSuggestions] = useState<string[]>(dropdownSuggestions || [])
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (partialRegex) {
@@ -34,8 +34,8 @@ export default function RegexInput({ id, label, partialRegex, regex, example, fo
 
     if (regex) {
       let label = e.target.parentElement?.querySelector("label") as HTMLLabelElement
-      if (regex.test(e.target.value) || e.target.value === "" || (forceSuggestion && !dropdownSuggestions?.includes(e.target.value))) label.classList.remove(styles.invalid)
-      else label.classList.add(styles.invalid)
+      if (e.target.value !== "" && (!regex.test(e.target.value) || (forceSuggestion && !dropdownSuggestions?.includes(e.target.value)))) label.classList.add(styles.invalid)
+      else label.classList.remove(styles.invalid)
     }
 
     if (dropdownSuggestions) {
@@ -51,13 +51,24 @@ export default function RegexInput({ id, label, partialRegex, regex, example, fo
     setSuggestions([])
   }
 
+  const suggestionKeyEvent = (e: any, suggestion: string) => {
+    if (e.key === "Enter") {
+      acceptSuggestion(e, suggestion)
+    }
+  }
+
   return (
     <div className={styles.regexInputContainer}>
       <label className={styles.regexInputLabel} htmlFor={id}>{label}</label>
       <input id={id} className={styles.regexInput} type="text" onChange={onChange} placeholder={example}/>
       <div className={styles.regexInputDropdown}>
-        { suggestions.map((suggestion) => 
-          <div className={styles.regexInputDropdownItem} onClick={e => acceptSuggestion(e, suggestion)}>{suggestion}</div>
+        { suggestions.map((suggestion, index) => 
+          <div key={index} tabIndex={0} className={styles.regexInputDropdownItem} 
+            onKeyUp={e => suggestionKeyEvent(e, suggestion)} 
+            onClick={e => acceptSuggestion(e, suggestion)}>
+              
+            {suggestion}
+          </div>
         ) }
       </div>
     </div>
