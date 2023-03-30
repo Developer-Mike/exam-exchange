@@ -76,8 +76,12 @@ export default function Upload({ subjects, teachers }: {
   useEffect(() => {
     if (authContext != undefined && authContext == null) {
       router.push("/login")
+      return
     }
-  })
+
+    if (window)
+      window.onbeforeunload = e => ""
+  }, [authContext])
 
   const removeUploadedFile = (index: number) => {
     let newUploadedFiles = [...uploadedPages]

@@ -1,4 +1,5 @@
 import styles from "@/styles/ExamPage.module.scss"
+import { useState } from "react"
 
 const quality = 0.5
 const maxFileSide = 1500
@@ -68,14 +69,21 @@ export default function PageComponent({ index, page, move, remove }: {
   move: (up: boolean) => void,
   remove: () => void,
 }) {
+  const [grayscale, _setGrayscale] = useState(page.grayscale)
+  const setGrayscale = (grayscale: boolean) => {
+    page.grayscale = grayscale
+    _setGrayscale(grayscale)
+  }
+
   return (
     <div key={index} className={styles.uploadedPage}>
-      <img src={URL.createObjectURL(page.file)}/>
+      <img src={URL.createObjectURL(page.file)} style={{ filter: grayscale ? "grayscale(1)" : "" }}/>
       <div className={styles.pageSettings}>
         <span className={`${styles.deleteImage} material-symbols-outlined`} onClick={() => { remove() }}>delete</span>
         <span className={`${styles.moveImage} material-symbols-outlined`} onClick={() => { move(true) }}>keyboard_arrow_up</span>
         <span className={`${styles.moveImage} material-symbols-outlined`} onClick={() => { move(false) }}>keyboard_arrow_down</span>
         <span className={`${styles.censorImage} material-symbols-outlined`} onClick={() => {  }}>blur_on</span>
+        <span className={`${styles.censorImage} material-symbols-outlined`} onClick={() => { setGrayscale(!grayscale) }}>palette</span>
       </div>
     </div>
   )
