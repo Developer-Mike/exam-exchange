@@ -5,7 +5,7 @@ import { useRouter } from "next/router"
 import useTranslation from "next-translate/useTranslation"
 import * as config from "@/config"
 import RegexInput from "@/components/RegexInput"
-import PageComponent, { ExamPage } from "@/components/ExamPage"
+import ExamPage, { exportPage } from "@/components/ExamPage"
 import { supabase } from "@/lib/supabase"
 
 export default function Upload({ subjects, teachers }: {
@@ -16,23 +16,14 @@ export default function Upload({ subjects, teachers }: {
 
   const router = useRouter()
   const authContext = useAuthContext()
-  const [uploadedPages, setUploadedPages] = useState<ExamPage[]>([])
+  const [uploadedPages, setUploadedPages] = useState<MediaSource[]>([])
 
   const openFilePicker = () => {
     document?.getElementById("file")?.click()
   }
 
   const fileUploaded = (e: any) => {
-    let promises = []
-
-    for (let file of e.target.files) {
-      promises.push(ExamPage.fromSource(document, file));
-    }
-
-    Promise.all(promises).then((page) => {
-      setUploadedPages(uploadedPages.concat(page))
-    })
-
+    setUploadedPages(uploadedPages.concat(...e.target.files))
     e.target.files = new DataTransfer().files
   }
 
@@ -43,8 +34,12 @@ export default function Upload({ subjects, teachers }: {
     const class_ = document.getElementById(styles.class) as HTMLInputElement
     const issueYear = document.getElementById(styles.issueYear) as HTMLInputElement
 
+    const examPagesCanvases = document.getElementById(styles.uploadImagesContainer)?.getElementsByTagName("canvas") as HTMLCollectionOf<HTMLCanvasElement>
+    const examPagesImagesPromises = Array.prototype.map.call(examPagesCanvases, canvas => exportPage(document, canvas)) as Promise<File>[]
+    const examPagesImages = await Promise.all(examPagesImagesPromises)
+
     if (!(config.topicRegex.test(topic.value) && config.subjectRegex.test(subject.value) && config.teacherRegex.test(teacher.value) && config.classRegex.test(class_.value) && config.yearRegex.test(issueYear.value)
-      && uploadedPages.length > 0 && uploadedPages.length <= config.maxImageCount && uploadedPages.every((page) => page.file.size <= config.maxImageSize) && issueYear.value <= new Date().getFullYear().toString()))
+      && examPagesImages.length > 0 && examPagesImages.length <= config.maxImageCount && examPagesImages.every((page) => page.size <= config.maxImageSize) && issueYear.value <= new Date().getFullYear().toString()))
       return
 
     // Show loading screen
@@ -60,7 +55,7 @@ export default function Upload({ subjects, teachers }: {
     ])
     console.log(data, error)
 
-    for (let page of uploadedPages) {
+    for (let page of examPagesImages) {
       const { data, error } = await supabase
         .storage
         .from('exam-images')
@@ -79,8 +74,7 @@ export default function Upload({ subjects, teachers }: {
       return
     }
 
-    if (window)
-      window.onbeforeunload = e => ""
+    if (window && process.env.NODE_ENV !== "development") window.onbeforeunload = e => ""
   }, [authContext])
 
   const removeUploadedFile = (index: number) => {
@@ -103,7 +97,7 @@ export default function Upload({ subjects, teachers }: {
     <>
       <main>
         <div className={styles.uploadContainer}>
-          <div className={styles.uploadImagesContainer}>
+          <div id={styles.uploadImagesContainer}>
             <div className={styles.uploadNewPage}>
               <input id="file" name="image" type="file" accept="image/*;capture=camera" multiple={true} onChange={fileUploaded}/>
 
@@ -111,9 +105,9 @@ export default function Upload({ subjects, teachers }: {
               <label htmlFor="file">{t("uploadImage")}</label>
             </div>
 
-            { uploadedPages.map((page, index) => <PageComponent index={index} page={page} move={up => moveUploadedFile(index, up)} remove={() => removeUploadedFile(index)} />)}
+            { uploadedPages.map((source, index) => <ExamPage key={index} index={index} source={source} move={up => moveUploadedFile(index, up)} remove={() => removeUploadedFile(index)} />)}
           </div>
-          <div className={styles.uploadDetailsContainer}>
+          <div id={styles.uploadDetailsContainer}>
             <h1>{t("upload")}</h1>
 
             <RegexInput id={styles.topic} label={t("topic")} partialRegex={config.partialTopicRegex} regex={config.topicRegex} example={t("topicExample")}/>
