@@ -79,19 +79,35 @@ export default function Upload({ subjects, teachers }: {
     }
   })
 
+  const removeUploadedFile = (index: number) => {
+    let newUploadedFiles = [...uploadedPages]
+    newUploadedFiles.splice(index, 1)
+
+    setUploadedPages(newUploadedFiles)
+  }
+
+  const moveUploadedFile = (index: number, up: boolean) => {
+    let newUploadedFiles = [...uploadedPages]
+    const file = newUploadedFiles[index]
+    newUploadedFiles.splice(index, 1)
+    newUploadedFiles.splice(up ? index - 1 : index + 1, 0, file)
+
+    setUploadedPages(newUploadedFiles)
+  }
+
   return (
     <>
       <main>
         <div className={styles.uploadContainer}>
           <div className={styles.uploadImagesContainer}>
             <div className={styles.uploadNewPage}>
-              <input id="file" name="image" type="file" accept="image/*" multiple={true} onChange={fileUploaded}/>
+              <input id="file" name="image" type="file" accept="image/*;capture=camera" multiple={true} onChange={fileUploaded}/>
 
               <span className="material-symbols-outlined" onClick={openFilePicker}>upload</span>
               <label htmlFor="file">{t("uploadImage")}</label>
             </div>
 
-            { uploadedPages.map((page, index) => <PageComponent index={index} page={page} uploadedPages={uploadedPages} setUploadedPages={setUploadedPages} />)}
+            { uploadedPages.map((page, index) => <PageComponent index={index} page={page} move={up => moveUploadedFile(index, up)} remove={() => removeUploadedFile(index)} />)}
           </div>
           <div className={styles.uploadDetailsContainer}>
             <h1>{t("upload")}</h1>
@@ -120,7 +136,6 @@ export default function Upload({ subjects, teachers }: {
   )
 }
 
-// static props
 export async function getStaticProps() {
   const { data: subjects, error: subjectsError } = await supabase
     .from("subjects")
