@@ -155,7 +155,7 @@ BEGIN
 END;
 $$;
 
-CREATE TRIGGER on_new_upcoming_exam
+CREATE TRIGGER on_upcoming_exam_inserted
     AFTER INSERT
     ON public.upcoming_exams
     FOR EACH ROW EXECUTE PROCEDURE public.handle_upcoming_exam_register();
@@ -168,18 +168,44 @@ CREATE TABLE public.uploaded_exams (
     topic TEXT NOT NULL,
     class VARCHAR(3) NOT NULL,
     issue_year NUMERIC(4, 0),
-    image_paths TEXT[],
     subject_id SERIAL REFERENCES subjects(id),
     teacher_id SERIAL REFERENCES teachers(id)
 );
 ALTER TABLE public.uploaded_exams ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Allow insert for themselves"
+CREATE POLICY "Allow insert for everyone"
 ON public.uploaded_exams
-FOR INSERT 
+FOR INSERT
 WITH CHECK (
-    auth.uid() = student_id AND validated = false 
+    true
 );
+
+CREATE POLICY "Allow read for self" 
+ON public.uploaded_exams
+FOR READ
+USING (
+    auth.uid() = student_id
+);
+
+CREATE FUNCTION public.handle_uploaded_exam()
+    RETURNS trigger
+    LANGUAGE PLPGSQL
+AS $$
+BEGIN
+    IF NEW.student_id <> auth.uid() THEN
+        RAISE EXCEPTION 'Student ID must match authenticated user ID';        
+    END IF;
+
+    NEW.validated = false;
+
+    RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER on_uploaded_exams_inserted
+  BEFORE INSERT
+  ON public.uploaded_exams
+  FOR EACH ROW EXECUTE PROCEDURE handle_uploaded_exam();
 
 CREATE FUNCTION public.handle_uploaded_exam_validated()
     RETURNS trigger

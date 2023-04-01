@@ -35,35 +35,60 @@ export default function Upload({ subjects, teachers }: {
     const issueYear = document.getElementById(styles.issueYear) as HTMLInputElement
 
     const examPagesCanvases = document.getElementById(styles.uploadImagesContainer)?.getElementsByTagName("canvas") as HTMLCollectionOf<HTMLCanvasElement>
-    const examPagesImagesPromises = Array.prototype.map.call(examPagesCanvases, canvas => exportPage(document, canvas)) as Promise<File>[]
+    const examPagesImagesPromises = Array.prototype.map.call(examPagesCanvases, canvas => exportPage(canvas)) as Promise<File>[]
     const examPagesImages = await Promise.all(examPagesImagesPromises)
 
     if (!(config.topicRegex.test(topic.value) && config.subjectRegex.test(subject.value) && config.teacherRegex.test(teacher.value) && config.classRegex.test(class_.value) && config.yearRegex.test(issueYear.value)
-      && examPagesImages.length > 0 && examPagesImages.length <= config.maxImageCount && examPagesImages.every((page) => page.size <= config.maxImageSize) && issueYear.value <= new Date().getFullYear().toString()))
+      && examPagesImages.length > 0 && examPagesImages.length <= config.maxImageCount && examPagesImages.every((page) => page.size <= config.maxImageSize)))
       return
 
-    // Show loading screen
-    // Get Teacher ID
-    // Get Subject ID
-    // Upload Exam
-    // Upload Images
-    
-    /* const { data, error } = await supabase
-      .from('uploaded_exams')
-      .insert([
-        { some_column: 'someValue', other_column: 'otherValue' },
-    ])
-    console.log(data, error)
+    // TODO: Show loading screen
 
+    // Get Teacher ID
+    const { data: teacherData, error: teacherError } = await supabase
+      .from("teachers")
+      .select("id")
+      .eq("abbreviation", teacher.value)
+
+    // Get Subject ID
+    const { data: subjectData, error: subjectError } = await supabase
+      .from("subjects")
+      .select("id")
+      .eq("subject_name", subject.value)
+
+    // Check if teacher and subject exist
+    if (teacherError || subjectError || teacherData?.length == 0 || subjectData?.length == 0) return
+
+    // Upload Exam
+    const { data: examData, error: examError } = await supabase
+      .from("uploaded_exams")
+      .insert(
+        {
+          topic: topic.value,
+          teacher_id: teacherData[0].id,
+          subject_id: subjectData[0].id,
+          class: class_.value,
+          issue_year: issueYear.value,
+          student_id: authContext.uid
+        }
+      )
+      .select()
+
+    // Check if exam was uploaded
+    if (examError || examData.length == 0) return
+    
+    // Upload Images
+    var i = 0
     for (let page of examPagesImages) {
-      const { data, error } = await supabase
+      console.log(`${authContext.uid}/${examData[0].id}/${i}`)
+      const { data: imageData, error: imageError } = await supabase
         .storage
-        .from('exam-images')
-        .upload(`${authContext.uid}/${data}`, await page.export(), {
-          cacheControl: '3600',
-          upsert: false
-      })
-    }*/
+        .from("exam-images")
+        .upload(`${authContext.uid}/${examData[0].id}/${i}.webp`, page)
+
+      if (imageError) return
+      i++
+    }
 
     router.push("/upload-success")
   }

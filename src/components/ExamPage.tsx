@@ -68,23 +68,8 @@ export default function PageComponent({ index, source, move, remove }: {
 const quality = 0.5
 const maxFileSide = 1500
 
-export async function exportPage(document: Document, canvas: HTMLCanvasElement): Promise<File> {
+export async function exportPage(canvas: HTMLCanvasElement): Promise<File> {
   return new Promise((resolve, reject) => {
-    const [width, height] = [canvas.width, canvas.height]
-
-    const aspectRatio = width / height
-    var newWidth = aspectRatio > 1 ? maxFileSide : maxFileSide * aspectRatio
-    var newHeight = aspectRatio > 1 ? maxFileSide / aspectRatio : maxFileSide
-
-    if (newWidth > width || newHeight > height) {
-      newWidth = width
-      newHeight = height
-    }
-
-    const newCanvas = document.createElement("canvas")
-    newCanvas.width = newWidth
-    newCanvas.height = newHeight
-
     canvas.toBlob(blob => {
       if (!blob) return
 
