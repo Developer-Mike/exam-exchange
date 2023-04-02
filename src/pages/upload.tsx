@@ -18,10 +18,6 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
   const authContext = useAuthContext()
   const [uploadedPages, setUploadedPages] = useState<MediaSource[]>([])
 
-  const openFilePicker = () => {
-    document?.getElementById("file")?.click()
-  }
-
   const fileUploaded = (e: any) => {
     setUploadedPages(uploadedPages.concat(...e.target.files))
     e.target.files = new DataTransfer().files
@@ -85,7 +81,8 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
         .from("exam-images")
         .upload(`${authContext.uid}/${examData[0].id}/${i}.webp`, examPagesImages[i]))
     }
-    await Promise.all(uploadImagesPromises)
+    const uploadImagesResults = await Promise.all(uploadImagesPromises)
+    if (uploadImagesResults.some(result => result.error)) return
 
     router.push("/upload-success")
   }
@@ -121,10 +118,16 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
         <div className={styles.uploadContainer}>
           <div id={styles.uploadImagesContainer}>
             <div className={styles.uploadNewPage}>
-              <input id="file" name="image" type="file" accept="image/*;capture=camera" multiple={true} onChange={fileUploaded}/>
-
-              <span className="material-symbols-outlined" onClick={openFilePicker}>upload</span>
-              <label htmlFor="file">{t("uploadImage")}</label>
+              <div className={styles.uploadPageVariant}>
+                <input id="upload-image" name="upload-image" type="file" accept="image/*" multiple={true} onChange={fileUploaded}/>
+                <span className="material-symbols-outlined" onClick={e => document.getElementById("upload-image")?.click()}>upload</span>
+                <label htmlFor="upload-image">{t("uploadImage")}</label>
+              </div>
+              <div className={styles.uploadPageVariant}>
+                <input id="take-photo" name="take-photo" type="file" accept="image/*" capture="environment" onChange={fileUploaded}/>
+                <span className="material-symbols-outlined" onClick={e => document.getElementById("take-photo")?.click()}>photo_camera</span>
+                <label htmlFor="take-photo">{t("takePhoto")}</label>
+              </div>
             </div>
 
             { uploadedPages.map((source, index) => <ExamPage key={index} index={index} source={source} move={up => moveUploadedFile(index, up)} remove={() => removeUploadedFile(index)} />)}

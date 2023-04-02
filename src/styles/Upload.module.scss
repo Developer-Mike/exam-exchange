@@ -4,7 +4,7 @@
 
   width: 100%;
   min-height: min-content;
-  padding-bottom: 100px;
+  padding-bottom: 15vh;
 }
 
 #uploadDetailsContainer {
@@ -14,7 +14,7 @@
   width: 60%;
   min-width: min(400px, 90%);
 
-  margin: 10px;
+  margin: 0 10px;
   padding: 10px;
 
   input {
@@ -57,8 +57,9 @@
   flex-direction: column;
 
   flex: 1;
+  align-self: flex-end;
+
   min-width: 300px;
-  min-height: 450px;
   height: min-content;
   margin: 10px;
 
@@ -70,28 +71,35 @@
 
   .uploadNewPage {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
 
-    margin: 50px;
+    margin: 30px;
 
     user-select: none;
 
-    * {
-      cursor: pointer;
-    }
+    .uploadPageVariant {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
 
-    span {
-      font-size: 4rem;
-    }
+      * {
+        cursor: pointer;
+      }
 
-    label {
-      font-size: 1.1rem;
-    }
+      span {
+        font-size: 4rem;
+      }
 
-    input {
-      display: none;
+      label {
+        font-size: 1.1rem;
+      }
+
+      input {
+        display: none;
+      }
     }
   }
 }
@@ -104,14 +112,14 @@
   display: inline-flex;
   align-items: center;
 
-  margin: 50px;
+  margin: min(50px, 5vw);
 }
 
 #legalAgreement {
   margin-right: 25px;
   padding: 10px 15px;
 
-  font-size: 1.25rem;
+  font-size: min(1.25rem, 3vw);
   color: $on-surface-color;
   text-decoration-color: $accent-color;
 
