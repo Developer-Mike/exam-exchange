@@ -78,17 +78,14 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
     if (examError || examData.length == 0) return
     
     // Upload Images
-    var i = 0
-    for (let page of examPagesImages) {
-      console.log(`${authContext.uid}/${examData[0].id}/${i}`)
-      const { data: imageData, error: imageError } = await supabase
+    var uploadImagesPromises = []
+    for (let i = 0; i < examPagesImages.length; i++) {
+      uploadImagesPromises.push(supabase
         .storage
         .from("exam-images")
-        .upload(`${authContext.uid}/${examData[0].id}/${i}.webp`, page)
-
-      if (imageError) return
-      i++
+        .upload(`${authContext.uid}/${examData[0].id}/${i}.webp`, examPagesImages[i]))
     }
+    await Promise.all(uploadImagesPromises)
 
     router.push("/upload-success")
   }

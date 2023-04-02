@@ -19,6 +19,9 @@ Fill out the `config.ts` in the `src` folder
 ## Setup Auth
 Go to the **Authentication** tab and enable auth by email
 
+## Enable Storage
+Go to the **Storage** tab and create a new bucket named `exam-images`
+
 ## Setup Database
 1. Go to the **SQL Editor** tab on the Supabase project overview
 2. Click on the **New query** button
@@ -140,6 +143,7 @@ WITH CHECK (
     auth.uid() = student_id
 );
 
+-- Create trigger for subtracting credits when registering an upcoming exam
 CREATE FUNCTION public.handle_upcoming_exam_register()
     RETURNS trigger
     LANGUAGE PLPGSQL
@@ -187,6 +191,7 @@ USING (
     auth.uid() = student_id
 );
 
+-- Create trigger for validating uploaded exams
 CREATE FUNCTION public.handle_uploaded_exam()
     RETURNS trigger
     LANGUAGE PLPGSQL
@@ -207,6 +212,7 @@ CREATE TRIGGER on_uploaded_exams_inserted
   ON public.uploaded_exams
   FOR EACH ROW EXECUTE PROCEDURE handle_uploaded_exam();
 
+-- Create listener for verifying uploaded exams for adding credits 
 CREATE FUNCTION public.handle_uploaded_exam_validated()
     RETURNS trigger
     LANGUAGE PLPGSQL
@@ -230,7 +236,22 @@ CREATE TRIGGER on_uploaded_exams_updated
     BEFORE UPDATE
     ON public.uploaded_exams
     FOR EACH ROW EXECUTE PROCEDURE public.handle_uploaded_exam_validated();
-```
 
-## Enable Storage
-Go to the **Storage** tab and create a new bucket named `exam-images`
+-- Create Storage Bucket policies
+CREATE POLICY "Allow uploading exam images in own folder"
+ON storage.objects
+FOR INSERT 
+TO public
+WITH CHECK (
+    bucket_id = 'exam-images'
+    and auth.uid()::text = (storage.foldername(name))[1]
+);
+
+CREATE POLICY "Allow reading exam images in own folder"
+ON storage.objects
+FOR SELECT
+TO public
+USING (
+    bucket_id = 'exam-images' AND auth.uid()::text = (storage.foldername(name))[1]
+);
+```
