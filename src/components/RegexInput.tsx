@@ -8,17 +8,28 @@ export default function RegexInput({ id, label, partialRegex, regex, example, fo
   regex?: RegExp,
   example: string,
   forceSuggestion?: boolean,
-  dropdownSuggestions?: string[]
+  dropdownSuggestions?: RegexInputSuggestion[]
 }) {
   const [value, setValue] = useState("")
-  const [suggestions, setSuggestions] = useState<string[]>(dropdownSuggestions || [])
+  const [suggestions, setSuggestions] = useState<RegexInputSuggestion[]>(dropdownSuggestions || [])
 
   const updateInvalidState = (target: any) => {
-    if (regex) {
-      let label = target.parentElement?.querySelector("label") as HTMLLabelElement
-      if (target.value !== "" && (!regex.test(target.value) || (forceSuggestion && !dropdownSuggestions?.includes(target.value)))) label.classList.add(styles.invalid)
-      else label.classList.remove(styles.invalid)
+    let label = target.parentElement?.querySelector("label") as HTMLLabelElement
+
+    var validInput = true
+    if (target.value !== "") {
+      if (regex && !regex.test(target.value)) validInput = false
+
+      if (dropdownSuggestions) {
+        let dropdownSuggestionsValues = suggestions.map(suggestion => suggestion.value)
+
+        if (forceSuggestion && !dropdownSuggestionsValues.includes(target.value)) validInput = false
+        else if (dropdownSuggestionsValues.includes(target.value)) validInput = true
+      }
     }
+
+    if (validInput) label.classList.remove(styles.invalid)
+    else label.classList.add(styles.invalid)
   }
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -44,19 +55,24 @@ export default function RegexInput({ id, label, partialRegex, regex, example, fo
 
     if (dropdownSuggestions) {
       if (e.target.value === "") setSuggestions(dropdownSuggestions)
-      else setSuggestions(dropdownSuggestions.filter((suggestion) => suggestion.includes(e.target.value)))
+      else setSuggestions(dropdownSuggestions.filter((suggestion) => 
+        suggestion.label.toLowerCase().includes(e.target.value.toLowerCase()) || 
+        suggestion.value.toLowerCase().includes(e.target.value.toLowerCase())
+      ))
     }
   }
 
-  const acceptSuggestion = (e: any, suggestion: string) => {
+  const acceptSuggestion = (e: any, suggestion: RegexInputSuggestion) => {
     let input = e.target.parentElement?.parentElement?.querySelector("input") as HTMLInputElement
-    input.value = suggestion
-    setValue(suggestion)
+
+    input.value = suggestion.value
+    setValue(suggestion.value)
+
     setSuggestions([])
     updateInvalidState(input)
   }
 
-  const suggestionKeyEvent = (e: any, suggestion: string) => {
+  const suggestionKeyEvent = (e: any, suggestion: RegexInputSuggestion) => {
     if (e.key === "Enter") {
       acceptSuggestion(e, suggestion)
     }
@@ -72,10 +88,15 @@ export default function RegexInput({ id, label, partialRegex, regex, example, fo
             onKeyUp={e => suggestionKeyEvent(e, suggestion)} 
             onClick={e => acceptSuggestion(e, suggestion)}>
               
-            {suggestion}
+            {suggestion.label}
           </div>
         ) }
       </div>
     </div>
   )
+}
+
+export interface RegexInputSuggestion {
+  value: string,
+  label: string
 }
