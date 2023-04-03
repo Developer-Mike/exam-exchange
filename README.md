@@ -19,10 +19,7 @@ Fill out the `config.ts` in the `src` folder
 ## Setup Auth
 Go to the **Authentication** tab and enable auth by email
 
-## Enable Storage
-Go to the **Storage** tab and create a new bucket named `exam-images`
-
-## Setup Database
+## Setup Database and Storage
 1. Go to the **SQL Editor** tab on the Supabase project overview
 2. Click on the **New query** button
 3. Paste the code below into the editor
@@ -237,7 +234,12 @@ CREATE TRIGGER on_uploaded_exams_updated
     ON public.uploaded_exams
     FOR EACH ROW EXECUTE PROCEDURE public.handle_uploaded_exam_validated();
 
--- Create Storage Bucket policies
+-- Create bucket for exam images
+INSERT INTO storage.buckets 
+    (id, name)
+VALUES
+    ('exam-images', 'exam-images');
+
 CREATE POLICY "Allow uploading exam images in own folder"
 ON storage.objects
 FOR INSERT 

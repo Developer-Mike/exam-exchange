@@ -17,6 +17,7 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
   const router = useRouter()
   const authContext = useAuthContext()
   const [uploadedPages, setUploadedPages] = useState<MediaSource[]>([])
+  const [uploading, setUploading] = useState(false)
 
   const fileUploaded = (e: any) => {
     setUploadedPages(uploadedPages.concat(...e.target.files))
@@ -38,8 +39,8 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
       && examPagesImages.length > 0 && examPagesImages.length <= config.maxImageCount && examPagesImages.every((page) => page.size <= config.maxImageSize)))
       return
 
-    // TODO: Show loading screen
-
+    setUploading(true)
+    
     // Get Teacher ID
     const { data: teacherData, error: teacherError } = await supabase
       .from("teachers")
@@ -53,7 +54,7 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
       .eq("subject_name", subject.value)
 
     // Check if teacher and subject exist
-    if (teacherError || subjectError || teacherData?.length == 0 || subjectData?.length == 0) return
+    if (teacherError || subjectError || teacherData?.length == 0 || subjectData?.length == 0) return setUploading(false)
 
     // Upload Exam
     const { data: examData, error: examError } = await supabase
@@ -71,7 +72,7 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
       .select()
 
     // Check if exam was uploaded
-    if (examError || examData.length == 0) return
+    if (examError || examData.length == 0) return setUploading(false)
     
     // Upload Images
     var uploadImagesPromises = []
@@ -82,7 +83,7 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
         .upload(`${authContext.uid}/${examData[0].id}/${i}.webp`, examPagesImages[i]))
     }
     const uploadImagesResults = await Promise.all(uploadImagesPromises)
-    if (uploadImagesResults.some(result => result.error)) return
+    if (uploadImagesResults.some(result => result.error)) return setUploading(false)
 
     router.push("/upload-success")
   }
@@ -104,7 +105,9 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
   }
 
   const moveUploadedFile = (index: number, up: boolean) => {
-    let newUploadedFiles = [...uploadedPages]
+    if (index == 0 && up || index == uploadedPages.length - 1 && !up) return
+
+    const newUploadedFiles = [...uploadedPages]
     const file = newUploadedFiles[index]
     newUploadedFiles.splice(index, 1)
     newUploadedFiles.splice(up ? index - 1 : index + 1, 0, file)
@@ -130,7 +133,9 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
               </div>
             </div>
 
-            { uploadedPages.map((source, index) => <ExamPage key={index} index={index} source={source} move={up => moveUploadedFile(index, up)} remove={() => removeUploadedFile(index)} />)}
+            { uploadedPages.map((source, index) => 
+              <ExamPage key={index} index={index} source={source} move={up => moveUploadedFile(index, up)} remove={() => removeUploadedFile(index)} />
+            )}
           </div>
           <div id={styles.uploadDetailsContainer}>
             <h1>{t("upload")}</h1>
@@ -153,6 +158,10 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
               <img src="coin-inverted.svg"/>
             </div>
           </button>
+        </div>
+
+        <div className={styles.uploadingOverlay} style={{display: uploading ? "flex" : "none"}}>
+          {t("uploading")}
         </div>
       </main>
     </>

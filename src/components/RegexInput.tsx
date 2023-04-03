@@ -81,7 +81,7 @@ export default function RegexInput({ id, label, partialRegex, regex, example, fo
   return (
     <div className={styles.regexInputContainer}>
       <label className={styles.regexInputLabel} htmlFor={id}>{label}</label>
-      <input id={id} className={styles.regexInput} type="text" onChange={onChange} placeholder={example}/>
+      <input id={id} className={styles.regexInput} type="text" onChange={onChange} placeholder={example} autoComplete="off"/>
       <div className={styles.regexInputDropdown}>
         { suggestions.map((suggestion, index) => 
           <div key={index} tabIndex={0} className={styles.regexInputDropdownItem} 

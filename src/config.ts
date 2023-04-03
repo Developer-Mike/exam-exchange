@@ -1,12 +1,12 @@
 export const schoolName = "Random School"
 export const mailRegex = /^[a-z]+\.[a-z]+@gmail\.com$/
 
-export const topicRegex = /^[A-Z0-1][A-Za-z0-9\-\. ]+$/
-export const partialTopicRegex = /^(?:[A-Z0-1]|$)[A-Za-z0-9\-\. ]*$/
-export const subjectRegex = /^[A-Z][A-Za-z ]+$/
-export const partialSubjectRegex = /^(?:[A-Z]|$)[A-Za-z ]*$/
-export const teacherRegex = /^[A-Z][a-z][A-Z]$/
-export const partialTeacherRegex = /^(?:[A-Z]|$)(?:[a-z]|$)(?:[A-Z]|$)$/
+export const topicRegex = /^[A-Z0-1ÖÄÜ][A-Za-z0-9\-\. öäüÖÄÜ]+$/
+export const partialTopicRegex = /^(?:[A-Z0-1ÖÄÜ]|$)[A-Za-z0-9\-\. öäüÖÄÜ]*$/
+export const subjectRegex = /^[A-ZÖÄÜ][A-Za-zöäüÖÄÜ ]+$/
+export const partialSubjectRegex = /^(?:[A-ZÖÄÜ]|$)[A-Za-zöäüÖÄÜ ]*$/
+export const teacherRegex = /^[A-ZÖÄÜ][a-zöäü][A-ZÖÄÜ]$/
+export const partialTeacherRegex = /^(?:[A-ZÖÄÜ]|$)(?:[a-zöäü]|$)(?:[A-ZÖÄÜ]|$)$/
 export const classRegex = /^[NK][1-4][A-Z]$/
 export const partialClassRegex = /^(?:[NK]|$)(?:[1-4]|$)(?:[A-Z]|$)$/
 const year = new Date().getFullYear().toString()
