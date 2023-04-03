@@ -6,6 +6,7 @@ module.exports = {
     '/': ['home'],
     '/login': ['login'],
     '/upload': ['upload'],
+    '/upload-success': ['upload-success'],
     '/dashboard': ['dashboard'],
   }
 }

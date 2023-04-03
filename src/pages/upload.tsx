@@ -134,7 +134,7 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
             </div>
 
             { uploadedPages.map((source, index) => 
-              <ExamPage key={index} index={index} source={source} move={up => moveUploadedFile(index, up)} remove={() => removeUploadedFile(index)} />
+              <ExamPage key={index} source={source} move={up => moveUploadedFile(index, up)} remove={() => removeUploadedFile(index)} />
             )}
           </div>
           <div id={styles.uploadDetailsContainer}>

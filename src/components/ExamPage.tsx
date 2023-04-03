@@ -1,8 +1,7 @@
 import styles from "@/styles/ExamPage.module.scss"
 import { useEffect, useRef, useState } from "react"
 
-export default function PageComponent({ index, source, move, remove }: { 
-  index: number,
+export default function PageComponent({ source, move, remove }: { 
   source: MediaSource,
   move: (up: boolean) => void,
   remove: () => void,
@@ -52,7 +51,7 @@ export default function PageComponent({ index, source, move, remove }: {
   })
 
   return (
-    <div key={index} className={styles.uploadedPage}>
+    <div className={styles.uploadedPage}>
       <canvas ref={canvasRef} className={styles.pageCanvas} />
       <div className={styles.pageSettings}>
         <span className={`${styles.deleteImage} material-symbols-outlined`} onClick={() => { remove() }}>delete</span>
