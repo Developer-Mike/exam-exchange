@@ -1,0 +1,43 @@
+#snackbar {
+  z-index: 900;
+
+  position: fixed;
+  bottom: 0;
+  left: 0;
+
+  display: inline-flex;
+  align-items: center;
+
+  visibility: hidden;
+  transform-origin: 0 100%;
+  transform: scale(0.3);
+  transition: all 0.2s ease-in-out;
+
+  margin: 20px;
+  padding: 10px 15px;
+  min-width: min(500px, 90vw);
+
+  font-size: min(1.5rem, 5vw);
+  color: $on-surface-color;
+
+  background-color: $surface-color;
+  border-radius: 8px;
+
+  &.visible {
+    visibility: visible;
+    transform: scale(1);
+  }
+
+  #icon {
+    margin-right: 10px;
+  }
+
+  #text {
+    flex: 1;
+  }
+
+  &.error {
+    background-color: $error-color;
+    box-shadow: rgba($error-color, 0.7) 0px 0.125em 0.5em;
+  }
+}

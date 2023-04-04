@@ -1,8 +1,5 @@
 # Exam Exchange
-An exam exchange website made for self-hosting. Upload exams and benefit from other exams. No more advantages for those with older siblings. A solid system that ensures that you also have to upload your own exams. Customizable for any school.
-
-## Technical Details
-Built with NextJS and Supabase
+An exam exchange website made for self-hosting and Built with NextJS and Supabase. Upload exams and benefit from other exams. No more advantages for those with older siblings. A solid system that ensures that you also have to upload your own exams. Customizable for any school.
 
 ## Install dependencies
 Run the command `npm install`
@@ -26,21 +23,6 @@ Go to the **Authentication** tab and enable auth by email
 4. Run the code
 
 ```sql
-DROP TABLE IF EXISTS public.upcoming_exams;
-DROP TABLE IF EXISTS public.uploaded_exams;
-DROP TABLE IF EXISTS public.subjects;
-DROP TABLE IF EXISTS public.teachers;
-DROP TABLE IF EXISTS public.students;
-
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-DROP FUNCTION IF EXISTS public.handle_new_user;
-
-DROP TRIGGER IF EXISTS on_new_upcoming_exam ON public.upcoming_exams;
-DROP FUNCTION IF EXISTS public.handle_upcoming_exam_register;
-
-DROP TRIGGER IF EXISTS on_uploaded_exams_updated ON public.uploaded_exams;
-DROP FUNCTION IF EXISTS public.handle_uploaded_exam_validated;
-
 -- Create Tables
 CREATE TABLE public.students (
     id UUID NOT NULL PRIMARY KEY REFERENCES auth.users ON DELETE CASCADE,

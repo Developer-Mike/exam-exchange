@@ -7,6 +7,7 @@ import * as config from "@/config"
 import RegexInput, { RegexInputSuggestion } from "@/components/RegexInput"
 import ExamPage, { exportPage } from "@/components/ExamPage"
 import { supabase } from "@/lib/supabase"
+import { makeSnackbar } from "@/components/Snackbar"
 
 export default function Upload({ subjectSuggestions, teacherSuggestions }: {
   subjectSuggestions: RegexInputSuggestion[],
@@ -24,6 +25,22 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
     e.target.files = new DataTransfer().files
   }
 
+  const uploadFinished = (error: null | "server" | "data_invalid") => {
+    switch (error) {
+      case "server":
+        makeSnackbar(t("uploadServerError"), "error")
+        break
+      case "data_invalid":
+        makeSnackbar(t("uploadDataIncomplete"), "error")
+        break
+      default:
+        router.push("/upload-success")
+        break
+    }
+
+    setUploading(false)
+  }
+
   const upload = async () => {
     const topic = document.getElementById(styles.topic) as HTMLInputElement
     const subject = document.getElementById(styles.subject) as HTMLInputElement
@@ -37,7 +54,7 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
 
     if (!(config.topicRegex.test(topic.value) && config.subjectRegex.test(subject.value) && config.teacherRegex.test(teacher.value) && config.classRegex.test(class_.value) && config.yearRegex.test(issueYear.value)
       && examPagesImages.length > 0 && examPagesImages.length <= config.maxImageCount && examPagesImages.every((page) => page.size <= config.maxImageSize)))
-      return
+      return uploadFinished("data_invalid")
 
     setUploading(true)
     
@@ -54,7 +71,7 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
       .eq("subject_name", subject.value)
 
     // Check if teacher and subject exist
-    if (teacherError || subjectError || teacherData?.length == 0 || subjectData?.length == 0) return setUploading(false)
+    if (teacherError || subjectError || teacherData?.length == 0 || subjectData?.length == 0) return uploadFinished("server")
 
     // Upload Exam
     const { data: examData, error: examError } = await supabase
@@ -72,7 +89,7 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
       .select()
 
     // Check if exam was uploaded
-    if (examError || examData.length == 0) return setUploading(false)
+    if (examError || examData.length == 0) return uploadFinished("server")
     
     // Upload Images
     var uploadImagesPromises = []
@@ -83,9 +100,10 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
         .upload(`${authContext.uid}/${examData[0].id}/${i}.webp`, examPagesImages[i]))
     }
     const uploadImagesResults = await Promise.all(uploadImagesPromises)
-    if (uploadImagesResults.some(result => result.error)) return setUploading(false)
+    if (uploadImagesResults.some(result => result.error)) return uploadFinished("server")
 
-    router.push("/upload-success")
+    // Upload Finished
+    uploadFinished(null)
   }
 
   useEffect(() => {

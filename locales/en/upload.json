@@ -13,5 +13,7 @@
     "yearIssued": "Issue Year",
     "uploadNow": "Upload",
     "legalAgreement": "By uploading this exam, you agree to the terms of service and the privacy policy of the site.",
-    "uploading": "Uploading..."
+    "uploading": "Uploading...",
+    "uploadServerError": "There was an error uploading the exam. Please try again later.",
+    "uploadDataIncomplete": "Please fill in all the fields correctly."
 }
