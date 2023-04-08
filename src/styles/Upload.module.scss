@@ -90,15 +90,18 @@
 
   overflow: hidden;
 
-  .uploadNewPage {
+  .uploadBar {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
 
     margin: 30px;
-
     user-select: none;
+
+    .uploadCount {
+      font-size: 2rem;
+    }
 
     .uploadPageVariant {
       display: flex;

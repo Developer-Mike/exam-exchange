@@ -1,6 +1,6 @@
 import styles from "@/styles/Upload.module.scss"
 import { useAuthContext } from "@/components/AuthContext"
-import { useEffect, useMemo, useState } from "react"
+import { ChangeEventHandler, FormEvent, useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/router"
 import useTranslation from "next-translate/useTranslation"
 import * as config from "@/config"
@@ -8,6 +8,11 @@ import RegexInput, { RegexInputSuggestion } from "@/components/RegexInput"
 import ExamPage, { exportPage } from "@/components/ExamPage"
 import { supabase } from "@/lib/supabase"
 import { makeSnackbar } from "@/components/Snackbar"
+
+interface UploadedImage {
+  source: MediaSource,
+  filename: string
+}
 
 export default function Upload({ subjectSuggestions, teacherSuggestions }: {
   subjectSuggestions: RegexInputSuggestion[],
@@ -17,11 +22,15 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
 
   const router = useRouter()
   const authContext = useAuthContext()
-  const [uploadedPages, setUploadedPages] = useState<MediaSource[]>([])
+  const [uploadedPages, setUploadedPages] = useState<UploadedImage[]>([])
   const [uploading, setUploading] = useState(false)
 
   const fileUploaded = (e: any) => {
-    setUploadedPages(uploadedPages.concat(...e.target.files))
+    let files = Array.prototype.map.call(e.target.files, (file: File) => (
+      { source: file, filename: URL.createObjectURL(file) }
+    )) as UploadedImage[]
+    
+    setUploadedPages(uploadedPages.concat(...files))
     e.target.files = new DataTransfer().files
   }
 
@@ -138,7 +147,8 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
       <main>
         <div className={styles.uploadContainer}>
           <div id={styles.uploadImagesContainer}>
-            <div className={styles.uploadNewPage}>
+            <div className={styles.uploadBar}>
+              <span className={styles.uploadCount}>{uploadedPages.length}/{config.maxImageCount}</span>
               <div className={styles.uploadPageVariant}>
                 <input id="upload-image" name="upload-image" type="file" accept="image/*" multiple={true} onChange={fileUploaded}/>
                 <span className="material-symbols-outlined" onClick={e => document.getElementById("upload-image")?.click()}>upload</span>
@@ -151,8 +161,8 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
               </div>
             </div>
 
-            { uploadedPages.map((source, index) => 
-              <ExamPage key={index} source={source} move={up => moveUploadedFile(index, up)} remove={() => removeUploadedFile(index)} />
+            { uploadedPages.map((image, index) => 
+              <ExamPage key={image.filename} source={image.source} move={up => moveUploadedFile(index, up)} remove={() => removeUploadedFile(index)} />
             )}
           </div>
           <div id={styles.uploadDetailsContainer}>

@@ -54,11 +54,12 @@ export default function PageComponent({ source, move, remove }: {
     <div className={styles.uploadedPage}>
       <canvas ref={canvasRef} className={styles.pageCanvas} />
       <div className={styles.pageSettings}>
-        <span className={`${styles.deleteImage} material-symbols-outlined`} onClick={() => { remove() }}>delete</span>
-        <span className={`${styles.moveImage} material-symbols-outlined`} onClick={() => { move(true) }}>keyboard_arrow_up</span>
-        <span className={`${styles.moveImage} material-symbols-outlined`} onClick={() => { move(false) }}>keyboard_arrow_down</span>
         <span className={`${styles.censorImage} material-symbols-outlined`} onClick={() => {  }}>blur_on</span>
         <span className={`${styles.censorImage} material-symbols-outlined`} onClick={() => { setGrayscale(!grayscale) }}>palette</span>
+        <span className={`${styles.moveImage} material-symbols-outlined`} onClick={() => { move(true) }}>keyboard_arrow_up</span>
+        <span className={`${styles.moveImage} material-symbols-outlined`} onClick={() => { move(false) }}>keyboard_arrow_down</span>
+        <span className={`${styles.editImage} material-symbols-outlined`} onClick={() => { remove() }}>edit</span>
+        <span className={`${styles.deleteImage} material-symbols-outlined`} onClick={() => { remove() }}>delete</span>
       </div>
     </div>
   )

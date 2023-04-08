@@ -2,20 +2,33 @@
   position: relative;
   display: flex;
 
-  flex: 1;
+  margin: 0 10px 10px 10px;
+  border-radius: 4px;
+  overflow: hidden;
 
   canvas {
-    width: 100%;
+    flex: 1;
     min-width: 250px;
   }
 
   .pageSettings {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+
     display: flex;
     flex-direction: column;
+
+    background-color: rgba($surface-color, 0.5);
+    border-radius: 4px;
+    overflow: hidden;
 
     * {
       padding: 15px;
       
+      font-size: 1.5rem;
+      color: $on-surface-color;
+
       user-select: none;
       cursor: pointer;
     }
@@ -25,9 +38,8 @@
       background-color: $error-color;
     }
 
-    *:not(.deleteImage) {
-      color: $on-surface-color;
-      border-bottom: 1px solid rgba($on-surface-color, 0.5);
+    *:not(:last-child):not(:first-child) {
+      border-top: 1px solid rgba($on-surface-color, 0.5);
     }
   }
 }
