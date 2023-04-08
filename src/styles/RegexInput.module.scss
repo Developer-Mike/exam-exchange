@@ -15,7 +15,15 @@
   
   color: $on-surface-color;
 
-  &.invalid {
+  &[data-validity="valid"] {
+    color: $on-surface-color;
+  }
+
+  &[data-validity="unknown"] {
+    color: $warning-color;
+  }
+
+  &[data-validity="invalid"] {
     color: $error-color;
   }
 }

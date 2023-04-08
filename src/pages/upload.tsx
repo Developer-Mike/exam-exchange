@@ -169,8 +169,8 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
             <h1>{t("upload")}</h1>
 
             <RegexInput id={styles.topic} label={t("topic")} partialRegex={config.partialTopicRegex} regex={config.topicRegex} example={t("topicExample")}/>
-            <RegexInput id={styles.subject} label={t("subject")} partialRegex={config.partialSubjectRegex} regex={config.subjectRegex} example={t("subjectExample")} forceSuggestion={true} dropdownSuggestions={subjectSuggestions}/>
-            <RegexInput id={styles.teacher} label={t("teacher")} partialRegex={config.partialTeacherRegex} regex={config.teacherRegex} example={t("teacherExample")} forceSuggestion={true} dropdownSuggestions={teacherSuggestions}/>
+            <RegexInput id={styles.subject} label={t("subject")} partialRegex={config.partialSubjectRegex} regex={config.subjectRegex} example={t("subjectExample")} dropdownSuggestions={subjectSuggestions}/>
+            <RegexInput id={styles.teacher} label={t("teacher")} partialRegex={config.partialTeacherRegex} regex={config.teacherRegex} example={t("teacherExample")} dropdownSuggestions={teacherSuggestions}/>
             <RegexInput id={styles.class} label={t("class")} partialRegex={config.partialClassRegex} regex={config.classRegex} example={t("classExample")}/>
             <RegexInput id={styles.issueYear} label={t("yearIssued")} partialRegex={config.partialYearRegex} regex={config.yearRegex} example={new Date().getFullYear().toString()}/>
           </div>

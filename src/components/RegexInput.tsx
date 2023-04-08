@@ -16,20 +16,21 @@ export default function RegexInput({ id, label, partialRegex, regex, example, fo
   const updateInvalidState = (target: any) => {
     let label = target.parentElement?.querySelector("label") as HTMLLabelElement
 
-    var validInput = true
+    var validityState: "valid" | "unknown" | "invalid" = "valid"
     if (target.value !== "") {
-      if (regex && !regex.test(target.value)) validInput = false
+      if (regex && !regex.test(target.value)) validityState = "invalid"
 
       if (dropdownSuggestions) {
         let dropdownSuggestionsValues = suggestions.map(suggestion => suggestion.value)
+        let includedInSuggestions = dropdownSuggestionsValues.includes(target.value)
 
-        if (forceSuggestion && !dropdownSuggestionsValues.includes(target.value)) validInput = false
-        else if (dropdownSuggestionsValues.includes(target.value)) validInput = true
+        if (forceSuggestion && !includedInSuggestions) validityState = "invalid"
+        else if (!forceSuggestion && !includedInSuggestions) validityState = "unknown"
+        else if (includedInSuggestions) validityState = "valid"
       }
     }
 
-    if (validInput) label.classList.remove(styles.invalid)
-    else label.classList.add(styles.invalid)
+    label.setAttribute("data-validity", validityState)
   }
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
