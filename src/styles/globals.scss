@@ -27,6 +27,14 @@ button {
   font-family: inherit;
 }
 
+input {
+  margin: 5px 0;
+  padding: 10px;
+
+  border: 1px solid rgba($on-surface-color, 0.2);
+  border-radius: 8px;
+}
+
 .fullscreen {
   z-index: -1;
   

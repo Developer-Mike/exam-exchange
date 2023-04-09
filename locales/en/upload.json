@@ -15,5 +15,11 @@
     "legalAgreement": "By uploading this exam, you agree to the terms of service and the privacy policy of the site.",
     "uploading": "Uploading...",
     "uploadServerError": "There was an error uploading the exam. Please try again later.",
-    "uploadDataIncomplete": "Please fill in all the fields correctly."
+    "uploadDataIncomplete": "Please fill in all the fields correctly.",
+    "registerTeacher": "Register new teacher",
+    "registerTeacherAbbreviation": "Teacher's Abbreviation",
+    "registerTeacherFirstName": "Teacher's First Name",
+    "registerTeacherLastName": "Teacher's Last Name",
+    "cancel": "Cancel",
+    "register": "Register"
 }

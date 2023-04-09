@@ -74,7 +74,20 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
       .select("id")
       .eq("abbreviation", teacher.value)
 
-    //TODO: New teacher dialog
+    // New teacher dialog
+    if (teacherError || teacherData?.length == 0) {
+      let shouldAdd = await makeDialog(t("registerTeacher"), (
+        <>
+          <RegexInput id={"newTeacherAbbreviation"} label={t("registerTeacherAbbreviation")} partialRegex={config.partialTeacherRegex} regex={config.teacherRegex} example={t("teacherExample")} value={teacher.value} />
+          <RegexInput id={"newTeacherFirstName"} label={t("registerTeacherFirstName")} regex={config.teacherRegex} example="..." />
+          <RegexInput id={"newTeacherLastName"} label={t("registerTeacherLastName")} regex={config.teacherRegex} example="..." />
+        </>
+      ), t("cancel"), t("register"))
+
+      if (!shouldAdd) return uploadFinished("data_invalid")
+      
+      // TODO: Add teacher to database
+    }
 
     // Get Subject ID
     const { data: subjectData, error: subjectError } = await supabase
@@ -125,12 +138,6 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
       router.push("/login")
       return
     }
-
-    //DEBUG
-    makeDialog("Register new teacher", <b>Test</b>, "Cancel", "Add Teacher").then((result) => {
-      if (result) console.log("Success")
-      else console.log("Cancel")
-    })
 
     if (window && process.env.NODE_ENV !== "development") window.onbeforeunload = e => ""
   }, [authContext])

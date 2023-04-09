@@ -1,16 +1,17 @@
 import styles from '@/styles/RegexInput.module.scss'
-import { ChangeEvent, useState } from "react"
+import { ChangeEvent, useEffect, useState } from "react"
 
-export default function RegexInput({ id, label, partialRegex, regex, example, forceSuggestion, dropdownSuggestions }: {
+export default function RegexInput({ id, label, partialRegex, regex, example, value, forceSuggestion, dropdownSuggestions }: {
   id: string,
   label: string,
   partialRegex?: RegExp,
   regex?: RegExp,
   example: string,
+  value?: string,
   forceSuggestion?: boolean,
   dropdownSuggestions?: RegexInputSuggestion[]
 }) {
-  const [value, setValue] = useState("")
+  const [currentValue, setCurrentValue] = useState("")
   const [suggestions, setSuggestions] = useState<RegexInputSuggestion[]>(dropdownSuggestions || [])
 
   const updateInvalidState = (target: any) => {
@@ -37,7 +38,7 @@ export default function RegexInput({ id, label, partialRegex, regex, example, fo
     if (partialRegex) {
       let newValue = e.target.value
       if (partialRegex.test(newValue)) {
-        setValue(newValue)
+        setCurrentValue(newValue)
       } else {
         var lastChar = newValue.substring(newValue.length - 1)
         if (lastChar.toUpperCase() != lastChar) lastChar = lastChar.toUpperCase()
@@ -45,9 +46,9 @@ export default function RegexInput({ id, label, partialRegex, regex, example, fo
         let newValueModified = newValue.substring(0, newValue.length - 1) + lastChar
         if (partialRegex.test(newValueModified)) {
           e.target.value = newValueModified
-          setValue(newValueModified)
+          setCurrentValue(newValueModified)
         } else {
-          e.target.value = value
+          e.target.value = currentValue
         }
       }
     }
@@ -67,7 +68,7 @@ export default function RegexInput({ id, label, partialRegex, regex, example, fo
     let input = e.target.parentElement?.parentElement?.querySelector("input") as HTMLInputElement
 
     input.value = suggestion.value
-    setValue(suggestion.value)
+    setCurrentValue(suggestion.value)
 
     setSuggestions([])
     updateInvalidState(input)
@@ -78,6 +79,18 @@ export default function RegexInput({ id, label, partialRegex, regex, example, fo
       acceptSuggestion(e, suggestion)
     }
   }
+
+  useEffect(() => {
+    if (value) {
+      let input = document.getElementById(id) as HTMLInputElement
+
+      if (input) {
+        input.value = value
+        setCurrentValue(value)
+        updateInvalidState(input)
+      }
+    }
+  }, [])
 
   return (
     <div className={styles.regexInputContainer}>
