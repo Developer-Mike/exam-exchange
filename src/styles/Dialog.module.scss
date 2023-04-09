@@ -1,0 +1,86 @@
+#dialogOverlay {
+  z-index: 1000;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+  
+  background-color: rgba($on-surface-color, 0.8);
+  backdrop-filter: blur(5px);
+
+  &:has(> .dialogVisible) {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  #dialogContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    visibility: hidden;
+    transform-origin: 0 0;
+    scale: 0.5;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    min-width: min-content;
+    width: min(80vw, 400px);
+    min-height: min-content;
+    height: min(70vw, 300px);
+    padding: 20px;
+
+    background-color: $surface-color;
+    border-radius: 8px;
+    box-shadow: rgba($on-surface-color, 0.7) 0px 0.125em 0.5em;
+
+    transition: all 0.3s ease-in-out;
+
+    &.dialogVisible {
+      visibility: visible;
+      scale: 1;
+    }
+    
+    #dialogTitle {
+      font-size: 2rem;
+    }
+
+    #dialogContent {
+      width: 100%;
+      height: 100%;
+      padding-top: 10px;
+    }
+
+    #dialogButtons {
+      display: flex;
+      justify-content: space-evenly;
+
+      width: 100%;
+      margin-top: 10px;
+
+      button {
+        flex: 1;
+        font-size: 1.25rem;
+      }
+
+      #negativeButton {
+        margin-right: 10px;
+        border: 2px solid $on-surface-color;
+        background-color: $surface-color;
+      }
+
+      #positiveButton {
+        margin-left: 10px;
+      }
+    }
+  }
+}

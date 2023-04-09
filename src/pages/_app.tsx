@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar'
 import AuthContext from '@/components/AuthContext'
 import Head from 'next/head'
 import Snackbar from '@/components/Snackbar'
+import Dialog from '@/components/Dialog'
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -16,6 +17,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <Navbar/>
         <Component {...pageProps} />
         <Snackbar/>
+        <Dialog/>
       </AuthContext>
     </>
   )

@@ -8,6 +8,7 @@ import RegexInput, { RegexInputSuggestion } from "@/components/RegexInput"
 import ExamPage, { exportPage } from "@/components/ExamPage"
 import { supabase } from "@/lib/supabase"
 import { makeSnackbar } from "@/components/Snackbar"
+import Dialog, { makeDialog } from "@/components/Dialog"
 
 interface UploadedImage {
   source: MediaSource,
@@ -73,11 +74,15 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
       .select("id")
       .eq("abbreviation", teacher.value)
 
+    //TODO: New teacher dialog
+
     // Get Subject ID
     const { data: subjectData, error: subjectError } = await supabase
       .from("subjects")
       .select("id")
       .eq("subject_name", subject.value)
+
+    //TODO: New subject dialog
 
     // Check if teacher and subject exist
     if (teacherError || subjectError || teacherData?.length == 0 || subjectData?.length == 0) return uploadFinished("server")
@@ -120,6 +125,12 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
       router.push("/login")
       return
     }
+
+    //DEBUG
+    makeDialog("Register new teacher", <b>Test</b>, "Cancel", "Add Teacher").then((result) => {
+      if (result) console.log("Success")
+      else console.log("Cancel")
+    })
 
     if (window && process.env.NODE_ENV !== "development") window.onbeforeunload = e => ""
   }, [authContext])

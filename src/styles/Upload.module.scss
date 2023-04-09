@@ -1,4 +1,6 @@
 .uploadingOverlay {
+  z-index: 950;
+  
   position: fixed;
   top: 0;
   bottom: 0;
@@ -11,7 +13,6 @@
 
   background-color: rgba($on-surface-color, 0.8);
   backdrop-filter: blur(5px);
-  z-index: 1000;
 
   color: $surface-color;
   font-size: 3rem;
