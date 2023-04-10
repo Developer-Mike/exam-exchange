@@ -1,6 +1,6 @@
 import styles from "@/styles/Upload.module.scss"
 import { useAuthContext } from "@/components/AuthContext"
-import { ChangeEventHandler, FormEvent, useEffect, useMemo, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/router"
 import useTranslation from "next-translate/useTranslation"
 import * as config from "@/config"
@@ -8,7 +8,7 @@ import RegexInput, { RegexInputSuggestion } from "@/components/RegexInput"
 import ExamPage, { exportPage } from "@/components/ExamPage"
 import { supabase } from "@/lib/supabase"
 import { makeSnackbar } from "@/components/Snackbar"
-import Dialog, { makeDialog } from "@/components/Dialog"
+import Dialog, { DialogFunction } from "@/components/Dialog"
 
 interface UploadedImage {
   source: MediaSource,
@@ -23,6 +23,9 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
 
   const router = useRouter()
   const authContext = useAuthContext()
+
+  const addNewTeacherDialog = useRef<DialogFunction>()
+
   const [uploadedPages, setUploadedPages] = useState<UploadedImage[]>([])
   const [uploading, setUploading] = useState(false)
 
@@ -76,17 +79,13 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
 
     // New teacher dialog
     if (teacherError || teacherData?.length == 0) {
-      let shouldAdd = await makeDialog(t("registerTeacher"), (
-        <>
-          <RegexInput id={"newTeacherAbbreviation"} label={t("registerTeacherAbbreviation")} partialRegex={config.partialTeacherRegex} regex={config.teacherRegex} example={t("teacherExample")} value={teacher.value} />
-          <RegexInput id={"newTeacherFirstName"} label={t("registerTeacherFirstName")} regex={config.teacherRegex} example="..." />
-          <RegexInput id={"newTeacherLastName"} label={t("registerTeacherLastName")} regex={config.teacherRegex} example="..." />
-        </>
-      ), t("cancel"), t("register"))
+      document.getElementById("newTeacherAbbreviation")?.setAttribute("value", teacher.value)
 
+      let shouldAdd = await addNewTeacherDialog.current!()
       if (!shouldAdd) return uploadFinished("data_invalid")
       
       // TODO: Add teacher to database
+      console.log("TODO: Add teacher to database")
     }
 
     // Get Subject ID
@@ -206,9 +205,13 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
           </button>
         </div>
 
-        <div className={styles.uploadingOverlay} style={{display: uploading ? "flex" : "none"}}>
-          {t("uploading")}
-        </div>
+        { uploading && <div className={styles.uploadingOverlay}>{t("uploading")}</div> }
+
+        <Dialog reference={addNewTeacherDialog} title={t("registerTeacher")} negative={t("cancel")} positive={t("register")}>
+          <RegexInput id={"newTeacherAbbreviation"} label={t("registerTeacherAbbreviation")} partialRegex={config.partialTeacherRegex} regex={config.teacherRegex} example={t("teacherExample")} />
+          <RegexInput id={"newTeacherFirstName"} label={t("registerTeacherFirstName")} regex={config.teacherRegex} example="..." />
+          <RegexInput id={"newTeacherLastName"} label={t("registerTeacherLastName")} regex={config.teacherRegex} example="..." />
+        </Dialog>
       </main>
     </>
   )

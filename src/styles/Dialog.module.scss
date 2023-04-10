@@ -1,4 +1,4 @@
-#dialogOverlay {
+.dialogOverlay {
   z-index: 1000;
 
   position: fixed;
@@ -19,7 +19,7 @@
     opacity: 1;
   }
 
-  #dialogContainer {
+  .dialogContainer {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -50,17 +50,17 @@
       scale: 1;
     }
     
-    #dialogTitle {
+    .dialogTitle {
       font-size: 2rem;
     }
 
-    #dialogContent {
+    .dialogContent {
       width: 100%;
       height: 100%;
       padding-top: 10px;
     }
 
-    #dialogButtons {
+    .dialogButtons {
       display: flex;
       justify-content: space-evenly;
 
@@ -72,13 +72,13 @@
         font-size: 1.25rem;
       }
 
-      #negativeButton {
+      .negativeButton {
         margin-right: 10px;
         border: 2px solid $on-surface-color;
         background-color: $surface-color;
       }
 
-      #positiveButton {
+      .positiveButton {
         margin-left: 10px;
       }
     }
