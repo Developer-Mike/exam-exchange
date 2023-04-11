@@ -72,14 +72,14 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
     setUploading(true)
     
     // Get Teacher ID
-    var teacherId = null
+    var teacherId: string | null = null
     const { data: teacherData, error: teacherError } = await supabase
       .from("teachers")
       .select("id, first_name, last_name, validated")
       .eq("abbreviation", teacherInput.value)
-      .single()
+    var teacher = teacherData?.find(teacher => teacher.validated)
 
-    if (teacherData && teacherData.validated) teacherId = teacherData.id
+    if (teacher) teacherId = teacher.id
     else {
       // New teacher dialog
       let teacherAbbreviationInput = document.getElementById("newTeacherAbbreviation") as HTMLInputElement
@@ -89,9 +89,9 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
       if (teacherAbbreviationInput)
         setRegexInputValue(teacherAbbreviationInput, teacherInput.value)
 
-      if (teacherData) {
-        setRegexInputValue(teacherFirstNameInput, teacherData.first_name)
-        setRegexInputValue(teacherLastNameInput, teacherData.last_name)
+      if (teacherData && teacherData.length > 0) {
+        setRegexInputValue(teacherFirstNameInput, teacherData[0].first_name)
+        setRegexInputValue(teacherLastNameInput, teacherData[0].last_name)
       }
 
       let shouldAdd = await addNewTeacherDialog.current!()
@@ -100,7 +100,8 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
       if (!config.nameRegex.test(teacherFirstNameInput.value) || !config.nameRegex.test(teacherLastNameInput.value))
         return uploadFinished("data_invalid")
 
-      if (teacherData?.first_name != teacherFirstNameInput.value || teacherData?.last_name != teacherLastNameInput.value) {
+      var existingTeacher = teacherData?.find(teacher => teacher.first_name == teacherFirstNameInput.value && teacher.last_name == teacherLastNameInput.value)
+      if (!existingTeacher) {
         // Add teacher to database with validated = false
         const { data: newTeacherData, error: newTeacherError } = await supabase
           .from("teachers")
@@ -112,27 +113,37 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
               validated: false
             }
           )
-          .select()
-          .single()
+          .select().limit(1).single()
         
         if (newTeacherError || !newTeacherData) return uploadFinished("server")
-
         teacherId = newTeacherData.id
-      } else teacherId = teacherData.id
+      } else teacherId = existingTeacher.id
     }
 
     // Get Subject ID
-    var subjectId = null
+    var subjectId: string | null = null
     const { data: subjectData, error: subjectError } = await supabase
       .from("subjects")
-      .select("id")
+      .select("id, validated")
       .eq("subject_name", subjectInput.value)
-      .single()
+    var subject = subjectData?.find(subject => subject.validated)
     
-    if (subjectData) subjectId = subjectData.id
+    if (subject) subjectId = subject.id
+    else if (subjectData && subjectData.length > 0) subjectId = subjectData[0].id
     else {
-      //TODO: New subject dialog
-      subjectId = "todo"
+      // Add the subject to database with validated = false
+      const { data: newSubjectData, error: newSubjectError } = await supabase
+        .from("subjects")
+        .insert(
+          {
+            subject_name: subjectInput.value,
+            validated: false
+          }
+        )
+        .select().limit(1).single()
+      
+      if (newSubjectError || !newSubjectData) return uploadFinished("server")
+      subjectId = newSubjectData.id
     }
 
     // Upload Exam
