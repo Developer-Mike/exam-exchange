@@ -12,19 +12,33 @@ export function SimpleInputSuggestions(suggestions: string[]): RegexInputSuggest
   return suggestions.map(suggestion => SimpleInputSuggestion(suggestion))
 }
 
-export default function RegexInput({ id, label, partialRegex, regex, example, value, forceSuggestion, dropdownSuggestions, disabled }: {
+export interface RegexInputRef {
+  getValue: () => string
+  setValue: (value: string) => void
+  setSuggestions: (suggestions: RegexInputSuggestion[]) => void
+  setDisabled: (disabled: boolean) => void
+}
+
+export default function RegexInput({ reference, id, label, partialRegex, regex, example, forceSuggestion, dropdownSuggestions, disabled }: {
+  reference?: React.MutableRefObject<RegexInputRef|undefined>,
   id: string,
   label: string,
   partialRegex?: RegExp,
   regex?: RegExp,
   example: string,
-  value?: string,
   forceSuggestion?: boolean,
   dropdownSuggestions?: RegexInputSuggestion[], 
   disabled?: boolean
 }) {
   const [currentValue, setCurrentValue] = useState("")
-  const [suggestions, setSuggestions] = useState<RegexInputSuggestion[]>(dropdownSuggestions || [])
+  const [suggestions, setSuggestions] = useState<RegexInputSuggestion[] | undefined>(dropdownSuggestions)
+  const [currentSuggestions, setCurrentSuggestions] = useState<RegexInputSuggestion[]>([])
+  const [disabledState, setDisabledState] = useState(disabled || false)
+
+  const setRegexInputValue = (input: HTMLInputElement, value: string) => {
+    input.value = value
+    input.dispatchEvent(new Event("input", { bubbles: true }))
+  }
 
   const updateInvalidState = (target: any) => {
     let label = target.parentElement?.querySelector("label") as HTMLLabelElement
@@ -33,8 +47,8 @@ export default function RegexInput({ id, label, partialRegex, regex, example, va
     if (target.value !== "") {
       if (regex && !regex.test(target.value)) validityState = "invalid"
 
-      if (dropdownSuggestions) {
-        let dropdownSuggestionsValues = dropdownSuggestions.map(suggestion => suggestion.value)
+      if (suggestions) {
+        let dropdownSuggestionsValues = suggestions.map(suggestion => suggestion.value)
         let includedInSuggestions = dropdownSuggestionsValues.includes(target.value)
 
         if (forceSuggestion && !includedInSuggestions) validityState = "invalid"
@@ -44,6 +58,17 @@ export default function RegexInput({ id, label, partialRegex, regex, example, va
     }
 
     label.setAttribute("data-validity", validityState)
+  }
+
+  const updateSuggestions = (target: any) => {
+    if (!suggestions) return
+
+    if (target.value === "") setCurrentSuggestions(suggestions)
+    else setCurrentSuggestions(suggestions.filter((suggestion) => 
+      (suggestion.label.toLowerCase().includes(target.value.toLowerCase()) || 
+      suggestion.value.toLowerCase().includes(target.value.toLowerCase())) &&
+      suggestion.value != target.value
+    ))
   }
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -66,15 +91,7 @@ export default function RegexInput({ id, label, partialRegex, regex, example, va
     }
 
     updateInvalidState(e.target)
-
-    if (dropdownSuggestions) {
-      if (e.target.value === "") setSuggestions(dropdownSuggestions)
-      else setSuggestions(dropdownSuggestions.filter((suggestion) => 
-        (suggestion.label.toLowerCase().includes(e.target.value.toLowerCase()) || 
-        suggestion.value.toLowerCase().includes(e.target.value.toLowerCase())) &&
-        suggestion.value !== e.target.value
-      ))
-    }
+    updateSuggestions(e.target)
   }
 
   const acceptSuggestion = (e: any, suggestion: RegexInputSuggestion) => {
@@ -87,23 +104,38 @@ export default function RegexInput({ id, label, partialRegex, regex, example, va
   }
 
   useEffect(() => {
-    if (value) {
-      let input = document.getElementById(id) as HTMLInputElement
-
-      if (input) {
-        input.value = value
-        setCurrentValue(value)
-        updateInvalidState(input)
+    if (reference) {
+      reference.current = {
+        getValue: () => {
+          return currentValue
+        },
+        setValue: (value: string) => {
+          let input = document.getElementById(id) as HTMLInputElement
+          if (input) setRegexInputValue(input, value)
+        },
+        setSuggestions: (suggestions: RegexInputSuggestion[]) => {
+          setSuggestions(suggestions)
+          updateSuggestions(document.getElementById(id))
+        },
+        setDisabled: (disabled: boolean) => {
+          setDisabledState(disabled)
+        }
       }
+    }
+
+    let input = document.getElementById(id) as HTMLInputElement
+    if (input) {
+      updateInvalidState(input)
+      updateSuggestions(input)
     }
   }, [])
 
   return (
     <div className={styles.regexInputContainer}>
       <label className={styles.regexInputLabel} htmlFor={id}>{label}</label>
-      <input id={id} className={styles.regexInput} type="text" onInput={onChange} placeholder={example} autoComplete="off" disabled={disabled}/>
+      <input id={id} className={styles.regexInput} type="text" onInput={onChange} placeholder={example} autoComplete="off" disabled={disabledState}/>
       <div className={styles.regexInputDropdown}>
-        { suggestions.map((suggestion, index) => 
+        { currentSuggestions.map((suggestion, index) => 
           <div key={index} tabIndex={0} className={styles.regexInputDropdownItem} 
             onKeyUp={e => suggestionKeyEvent(e, suggestion)} 
             onClick={e => acceptSuggestion(e, suggestion)}>
@@ -114,9 +146,4 @@ export default function RegexInput({ id, label, partialRegex, regex, example, va
       </div>
     </div>
   )
-}
-
-export function setRegexInputValue(input: HTMLInputElement, value: string) {
-  input.value = value
-  input.dispatchEvent(new Event("input", { bubbles: true }))
 }

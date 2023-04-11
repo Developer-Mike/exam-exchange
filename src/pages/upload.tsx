@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/router"
 import useTranslation from "next-translate/useTranslation"
 import * as config from "@/config"
-import RegexInput, { SimpleInputSuggestion, SimpleInputSuggestions, setRegexInputValue } from "@/components/RegexInput"
+import RegexInput, { RegexInputRef, SimpleInputSuggestion, SimpleInputSuggestions } from "@/components/RegexInput"
 import ExamPage, { exportPage } from "@/components/ExamPage"
 import { supabase } from "@/lib/supabase"
 import { makeSnackbar } from "@/components/Snackbar"
@@ -30,23 +30,14 @@ export default function Upload({ subjects, teachers }: {
   )), [subjects])
   const teacherSuggestions = useMemo(() => teachers.filter(teacher => teacher.validated).map(teacher => ({
     value: teacher.abbreviation,
-    label: `${teacher.first_name} ${teacher.last_name} (${teacher.abbreviation}))`
+    label: `${teacher.first_name} ${teacher.last_name} (${teacher.abbreviation})`
   })), [teachers])
 
   // Add new teacher dialog
   const addNewTeacherDialog = useRef<DialogFunction>()
-
-  const unvalidatedTeachers = useMemo(() => teachers.filter(teacher => !teacher.validated), [teachers])
-  const newTeacherFirstNameSuggestions = useMemo(() => {
-    const firstNames = unvalidatedTeachers.map(teacher => teacher.first_name)
-    const uniqueFirstNames = firstNames.filter((value, index) => firstNames.indexOf(value) == index)
-    return SimpleInputSuggestions(uniqueFirstNames)
-  }, [unvalidatedTeachers])
-  const newTeacherLastNameSuggestions = useMemo(() => {
-    const lastNames = unvalidatedTeachers.map(teacher => teacher.last_name)
-    const uniqueLastNames = lastNames.filter((value, index) => lastNames.indexOf(value) == index)
-    return SimpleInputSuggestions(uniqueLastNames)
-  }, [unvalidatedTeachers])
+  const newTeacherAbbreviationInput = useRef<RegexInputRef>()
+  const newTeacherFirstNameInput = useRef<RegexInputRef>()
+  const newTeacherLastNameInput = useRef<RegexInputRef>()
 
   // States
   const [uploadedPages, setUploadedPages] = useState<UploadedImage[]>([])
@@ -105,34 +96,38 @@ export default function Upload({ subjects, teachers }: {
     if (teacher) teacherId = teacher.id
     else {
       // New teacher dialog
-      let teacherAbbreviationInput = document.getElementById("newTeacherAbbreviation") as HTMLInputElement
-      let teacherFirstNameInput = document.getElementById("newTeacherFirstName") as HTMLInputElement
-      let teacherLastNameInput = document.getElementById("newTeacherLastName") as HTMLInputElement
-
-      if (teacherAbbreviationInput)
-        setRegexInputValue(teacherAbbreviationInput, teacherInput.value)
+      newTeacherAbbreviationInput.current?.setValue(teacherInput.value)
 
       if (teacherData && teacherData.length > 0) {
-        setRegexInputValue(teacherFirstNameInput, teacherData[0].first_name)
-        setRegexInputValue(teacherLastNameInput, teacherData[0].last_name)
+        const teacherFirstNames = teacherData.map(teacher => teacher.first_name)
+        newTeacherFirstNameInput.current?.setValue(teacherData[0].first_name)
+        newTeacherFirstNameInput.current?.setSuggestions(SimpleInputSuggestions(teacherFirstNames
+          .filter((value, index) => teacherFirstNames.indexOf(value) == index)
+        ))
+
+        const teacherLastNames = teacherData.map(teacher => teacher.last_name)
+        newTeacherLastNameInput.current?.setValue(teacherData[0].last_name)
+        newTeacherLastNameInput.current?.setSuggestions(SimpleInputSuggestions(teacherLastNames
+          .filter((value, index) => teacherLastNames.indexOf(value) == index)
+        ))
       }
 
       let shouldAdd = await addNewTeacherDialog.current!()
       if (!shouldAdd) return uploadFinished("data_invalid")
 
-      if (!config.nameRegex.test(teacherFirstNameInput.value) || !config.nameRegex.test(teacherLastNameInput.value))
+      if (!config.nameRegex.test(newTeacherFirstNameInput.current!.getValue()) || !config.nameRegex.test(newTeacherLastNameInput.current!.getValue()))
         return uploadFinished("data_invalid")
 
-      var existingTeacher = teacherData?.find(teacher => teacher.first_name == teacherFirstNameInput.value && teacher.last_name == teacherLastNameInput.value)
+      var existingTeacher = teacherData?.find(teacher => teacher.first_name == newTeacherFirstNameInput.current!.getValue() && teacher.last_name == newTeacherLastNameInput.current!.getValue())
       if (!existingTeacher) {
         // Add teacher to database with validated = false
         const { data: newTeacherData, error: newTeacherError } = await supabase
           .from("teachers")
           .insert(
             {
-              abbreviation: teacherAbbreviationInput.value,
-              first_name: teacherFirstNameInput.value,
-              last_name: teacherLastNameInput.value,
+              abbreviation: newTeacherAbbreviationInput.current!.getValue(),
+              first_name: newTeacherFirstNameInput.current!.getValue(),
+              last_name: newTeacherLastNameInput.current!.getValue(),
               validated: false
             }
           )
@@ -278,9 +273,9 @@ export default function Upload({ subjects, teachers }: {
         { uploading && <div className={styles.uploadingOverlay}>{t("uploading")}</div> }
 
         <Dialog reference={addNewTeacherDialog} title={t("registerTeacher")} negative={t("cancel")} positive={t("register")}>
-          <RegexInput id={"newTeacherAbbreviation"} label={t("registerTeacherAbbreviation")} partialRegex={config.partialTeacherAbbreviationRegex} regex={config.teacherAbbreviationRegex} example={t("teacherExample")} disabled />
-          <RegexInput id={"newTeacherFirstName"} label={t("registerTeacherFirstName")} partialRegex={config.partialNameRegex} regex={config.nameRegex} example={t("registerTeacherFirstNameExample")} dropdownSuggestions={newTeacherFirstNameSuggestions} />
-          <RegexInput id={"newTeacherLastName"} label={t("registerTeacherLastName")} partialRegex={config.partialNameRegex} regex={config.nameRegex} example={t("registerTeacherLastNameExample")} dropdownSuggestions={newTeacherLastNameSuggestions} />
+          <RegexInput reference={newTeacherAbbreviationInput} id={"newTeacherAbbreviation"} label={t("registerTeacherAbbreviation")} partialRegex={config.partialTeacherAbbreviationRegex} regex={config.teacherAbbreviationRegex} example={t("teacherExample")} disabled />
+          <RegexInput reference={newTeacherFirstNameInput} id={"newTeacherFirstName"} label={t("registerTeacherFirstName")} partialRegex={config.partialNameRegex} regex={config.nameRegex} example={t("registerTeacherFirstNameExample")}/>
+          <RegexInput reference={newTeacherLastNameInput} id={"newTeacherLastName"} label={t("registerTeacherLastName")} partialRegex={config.partialNameRegex} regex={config.nameRegex} example={t("registerTeacherLastNameExample")} />
         </Dialog>
       </main>
     </>
