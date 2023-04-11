@@ -1,2 +1,2 @@
 # TODO
-- [ ] Dialog dismiss on click outside
+- [ ] Fix suggestion font size (Probably iherit font size)

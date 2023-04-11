@@ -1,26 +1,54 @@
 import styles from '@/styles/Dialog.module.scss'
 import { useEffect, useRef } from 'react'
 
-export type DialogFunction = () => Promise<boolean>
+export interface DialogRef {
+  show: () => Promise<boolean>
+}
 
 export default function Dialog({ reference, title, negative, positive, children }: { 
-  reference: React.MutableRefObject<DialogFunction|undefined>,
+  reference: React.MutableRefObject<DialogRef|undefined>,
   title: string,
   negative?: string,
   positive: string,
   children: React.ReactNode
 }) {
   const dialog = useRef<HTMLDivElement>(null)
+  const dialogOverlay = useRef<HTMLDivElement>(null)
   const positiveButton = useRef<HTMLButtonElement>(null)
   const negativeButton = useRef<HTMLButtonElement>(null)
   
   useEffect(() => {
-    // @ts-ignore
-    reference.current = () => makeDialog(dialog.current, positiveButton.current, negativeButton.current)
+    reference.current = {
+      show: () => {
+        return new Promise((resolve, reject) => {
+          dialog.current!.classList.add(styles.dialogVisible)
+          const hide = () => dialog.current?.classList.remove(styles.dialogVisible)
+      
+          if (negativeButton) {
+            dialogOverlay.current!.onclick = (e) => {
+              if (e.target !== dialogOverlay.current) return // Ignore children clicks
+
+              hide()
+              resolve(false)
+            }
+
+            negativeButton.current!.onclick = () => {
+              hide()
+              resolve(false)
+            }
+          }
+      
+          positiveButton.current!.onclick = () => {
+            hide()
+            resolve(true)
+          }
+        })
+      }
+    }
   }, [])
 
   return (
-    <div className={styles.dialogOverlay}>
+    <div ref={dialogOverlay} className={styles.dialogOverlay}>
       <div ref={dialog} className={styles.dialogContainer}>
         <div className={styles.dialogTitle}>{title}</div>
         <div className={styles.dialogContent}>
@@ -33,22 +61,4 @@ export default function Dialog({ reference, title, negative, positive, children 
       </div>
     </div>
   )
-}
-
-async function makeDialog(dialog: HTMLElement, positiveButton: HTMLElement, negativeButton: HTMLElement|null): Promise<boolean> {
-  return new Promise((resolve, reject) => {
-    dialog.classList.add(styles.dialogVisible)
-
-    if (negativeButton) {
-      negativeButton.onclick = () => {
-        dialog?.classList.remove(styles.dialogVisible)
-        resolve(false)
-      }
-    }
-
-    positiveButton.onclick = () => {
-      dialog?.classList.remove(styles.dialogVisible)
-      resolve(true)
-    }
-  })
 }

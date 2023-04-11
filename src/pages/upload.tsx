@@ -8,7 +8,7 @@ import RegexInput, { RegexInputRef, SimpleInputSuggestion, SimpleInputSuggestion
 import ExamPage, { exportPage } from "@/components/ExamPage"
 import { supabase } from "@/lib/supabase"
 import { makeSnackbar } from "@/components/Snackbar"
-import Dialog, { DialogFunction } from "@/components/Dialog"
+import Dialog, { DialogRef } from "@/components/Dialog"
 
 interface UploadedImage {
   source: MediaSource,
@@ -34,7 +34,7 @@ export default function Upload({ subjects, teachers }: {
   })), [teachers])
 
   // Add new teacher dialog
-  const addNewTeacherDialog = useRef<DialogFunction>()
+  const addNewTeacherDialog = useRef<DialogRef>()
   const newTeacherAbbreviationInput = useRef<RegexInputRef>()
   const newTeacherFirstNameInput = useRef<RegexInputRef>()
   const newTeacherLastNameInput = useRef<RegexInputRef>()
@@ -112,7 +112,7 @@ export default function Upload({ subjects, teachers }: {
         ))
       }
 
-      let shouldAdd = await addNewTeacherDialog.current!()
+      let shouldAdd = await addNewTeacherDialog.current!.show()
       if (!shouldAdd) return uploadFinished("data_invalid")
 
       if (!config.nameRegex.test(newTeacherFirstNameInput.current!.getValue()) || !config.nameRegex.test(newTeacherLastNameInput.current!.getValue()))
