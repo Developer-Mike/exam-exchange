@@ -15,10 +15,8 @@ interface UploadedImage {
   filename: string
 }
 
-export default function Upload({ subjects, subjectSuggestions, teachers, teacherSuggestions }: {
-  subjects: { subject_name: string, validated: boolean }[],
+export default function Upload({ subjectSuggestions, teacherSuggestions }: {
   subjectSuggestions: RegexInputSuggestion[],
-  teachers: { abbreviation: string, first_name: string, last_name: string, validated: boolean }[],
   teacherSuggestions: RegexInputSuggestion[]
 }) {
   const { t } = useTranslation("upload")
@@ -57,17 +55,17 @@ export default function Upload({ subjects, subjectSuggestions, teachers, teacher
   }
 
   const upload = async () => {
-    const topic = document.getElementById(styles.topic) as HTMLInputElement
-    const subject = document.getElementById(styles.subject) as HTMLInputElement
-    const teacher = document.getElementById(styles.teacher) as HTMLInputElement
-    const class_ = document.getElementById(styles.class) as HTMLInputElement
-    const issueYear = document.getElementById(styles.issueYear) as HTMLInputElement
+    const topicInput = document.getElementById(styles.topic) as HTMLInputElement
+    const subjectInput = document.getElementById(styles.subject) as HTMLInputElement
+    const teacherInput = document.getElementById(styles.teacher) as HTMLInputElement
+    const classInput = document.getElementById(styles.class) as HTMLInputElement
+    const issueYearInput = document.getElementById(styles.issueYear) as HTMLInputElement
 
     const examPagesCanvases = document.getElementById(styles.uploadImagesContainer)?.getElementsByTagName("canvas") as HTMLCollectionOf<HTMLCanvasElement>
     const examPagesImagesPromises = Array.prototype.map.call(examPagesCanvases, canvas => exportPage(canvas)) as Promise<File>[]
     const examPagesImages = await Promise.all(examPagesImagesPromises)
 
-    if (!(config.topicRegex.test(topic.value) && config.subjectRegex.test(subject.value) && config.teacherAbbreviationRegex.test(teacher.value) && config.classRegex.test(class_.value) && config.yearRegex.test(issueYear.value)
+    if (!(config.topicRegex.test(topicInput.value) && config.subjectRegex.test(subjectInput.value) && config.teacherAbbreviationRegex.test(teacherInput.value) && config.classRegex.test(classInput.value) && config.yearRegex.test(issueYearInput.value)
       && examPagesImages.length > 0 && examPagesImages.length <= config.maxImageCount && examPagesImages.every((page) => page.size <= config.maxImageSize)))
       return uploadFinished("data_invalid")
 
@@ -78,7 +76,7 @@ export default function Upload({ subjects, subjectSuggestions, teachers, teacher
     const { data: teacherData, error: teacherError } = await supabase
       .from("teachers")
       .select("id, first_name, last_name, validated")
-      .eq("abbreviation", teacher.value)
+      .eq("abbreviation", teacherInput.value)
       .single()
 
     if (teacherData && teacherData.validated) teacherId = teacherData.id
@@ -89,7 +87,7 @@ export default function Upload({ subjects, subjectSuggestions, teachers, teacher
       let teacherLastNameInput = document.getElementById("newTeacherLastName") as HTMLInputElement
 
       if (teacherAbbreviationInput)
-        setRegexInputValue(teacherAbbreviationInput, teacher.value)
+        setRegexInputValue(teacherAbbreviationInput, teacherInput.value)
 
       if (teacherData) {
         setRegexInputValue(teacherFirstNameInput, teacherData.first_name)
@@ -120,9 +118,7 @@ export default function Upload({ subjects, subjectSuggestions, teachers, teacher
         if (newTeacherError || !newTeacherData) return uploadFinished("server")
 
         teacherId = newTeacherData.id
-      } else {
-        teacherId = teacherData.id
-      }
+      } else teacherId = teacherData.id
     }
 
     // Get Subject ID
@@ -130,7 +126,7 @@ export default function Upload({ subjects, subjectSuggestions, teachers, teacher
     const { data: subjectData, error: subjectError } = await supabase
       .from("subjects")
       .select("id")
-      .eq("subject_name", subject.value)
+      .eq("subject_name", subjectInput.value)
       .single()
     
     if (subjectData) subjectId = subjectData.id
@@ -144,11 +140,11 @@ export default function Upload({ subjects, subjectSuggestions, teachers, teacher
       .from("uploaded_exams")
       .insert(
         {
-          topic: topic.value,
+          topic: topicInput.value,
           teacher_id: teacherId,
           subject_id: subjectId,
-          class: class_.value,
-          issue_year: issueYear.value,
+          class: classInput.value,
+          issue_year: issueYearInput.value,
           student_id: authContext.uid
         }
       )
@@ -270,7 +266,6 @@ export async function getStaticProps() {
 
   return {
     props: {
-      subjects: subjects ?? [],
       subjectSuggestions: validatedSubjects?.map((subject: any) =>
         ({
           label: subject.subject_name, 
@@ -278,7 +273,6 @@ export async function getStaticProps() {
         } as RegexInputSuggestion)
       ) ?? [],
 
-      teachers: teachers ?? [],
       teacherSuggestions: validatedTeachers?.map((teacher: any) =>
         ({
           label: `${teacher.first_name} ${teacher.last_name} (${teacher.abbreviation})`, 
