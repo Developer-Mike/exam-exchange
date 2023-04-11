@@ -1,10 +1,10 @@
 import styles from "@/styles/Upload.module.scss"
 import { useAuthContext } from "@/components/AuthContext"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/router"
 import useTranslation from "next-translate/useTranslation"
 import * as config from "@/config"
-import RegexInput, { RegexInputSuggestion, setRegexInputValue } from "@/components/RegexInput"
+import RegexInput, { SimpleInputSuggestion, SimpleInputSuggestions, setRegexInputValue } from "@/components/RegexInput"
 import ExamPage, { exportPage } from "@/components/ExamPage"
 import { supabase } from "@/lib/supabase"
 import { makeSnackbar } from "@/components/Snackbar"
@@ -15,17 +15,40 @@ interface UploadedImage {
   filename: string
 }
 
-export default function Upload({ subjectSuggestions, teacherSuggestions }: {
-  subjectSuggestions: RegexInputSuggestion[],
-  teacherSuggestions: RegexInputSuggestion[]
+export default function Upload({ subjects, teachers }: {
+  subjects: { subject_name: string, validated: boolean }[]
+  teachers: { abbreviation: string, first_name: string, last_name: string, validated: boolean }[]
 }) {
   const { t } = useTranslation("upload")
 
   const router = useRouter()
   const authContext = useAuthContext()
 
+  // Suggestions for inputs
+  const subjectSuggestions = useMemo(() => subjects.filter(subject => subject.validated).map(subject => (
+    SimpleInputSuggestion(subject.subject_name)
+  )), [subjects])
+  const teacherSuggestions = useMemo(() => teachers.filter(teacher => teacher.validated).map(teacher => ({
+    value: teacher.abbreviation,
+    label: `${teacher.first_name} ${teacher.last_name} (${teacher.abbreviation}))`
+  })), [teachers])
+
+  // Add new teacher dialog
   const addNewTeacherDialog = useRef<DialogFunction>()
 
+  const unvalidatedTeachers = useMemo(() => teachers.filter(teacher => !teacher.validated), [teachers])
+  const newTeacherFirstNameSuggestions = useMemo(() => {
+    const firstNames = unvalidatedTeachers.map(teacher => teacher.first_name)
+    const uniqueFirstNames = firstNames.filter((value, index) => firstNames.indexOf(value) == index)
+    return SimpleInputSuggestions(uniqueFirstNames)
+  }, [unvalidatedTeachers])
+  const newTeacherLastNameSuggestions = useMemo(() => {
+    const lastNames = unvalidatedTeachers.map(teacher => teacher.last_name)
+    const uniqueLastNames = lastNames.filter((value, index) => lastNames.indexOf(value) == index)
+    return SimpleInputSuggestions(uniqueLastNames)
+  }, [unvalidatedTeachers])
+
+  // States
   const [uploadedPages, setUploadedPages] = useState<UploadedImage[]>([])
   const [uploading, setUploading] = useState(false)
 
@@ -256,8 +279,8 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
 
         <Dialog reference={addNewTeacherDialog} title={t("registerTeacher")} negative={t("cancel")} positive={t("register")}>
           <RegexInput id={"newTeacherAbbreviation"} label={t("registerTeacherAbbreviation")} partialRegex={config.partialTeacherAbbreviationRegex} regex={config.teacherAbbreviationRegex} example={t("teacherExample")} disabled />
-          <RegexInput id={"newTeacherFirstName"} label={t("registerTeacherFirstName")} partialRegex={config.partialNameRegex} regex={config.nameRegex} example={t("registerTeacherFirstNameExample")} />
-          <RegexInput id={"newTeacherLastName"} label={t("registerTeacherLastName")} partialRegex={config.partialNameRegex} regex={config.nameRegex} example={t("registerTeacherLastNameExample")} />
+          <RegexInput id={"newTeacherFirstName"} label={t("registerTeacherFirstName")} partialRegex={config.partialNameRegex} regex={config.nameRegex} example={t("registerTeacherFirstNameExample")} dropdownSuggestions={newTeacherFirstNameSuggestions} />
+          <RegexInput id={"newTeacherLastName"} label={t("registerTeacherLastName")} partialRegex={config.partialNameRegex} regex={config.nameRegex} example={t("registerTeacherLastNameExample")} dropdownSuggestions={newTeacherLastNameSuggestions} />
         </Dialog>
       </main>
     </>
@@ -268,28 +291,15 @@ export async function getStaticProps() {
   const { data: subjects, error: subjectsError } = await supabase
     .from("subjects")
     .select("subject_name, validated")
-  const validatedSubjects = subjects?.filter((subject: any) => subject.validated)
 
   const { data: teachers, error: teachersError } = await supabase
     .from("teachers")
     .select("abbreviation, first_name, last_name, validated")
-  const validatedTeachers = teachers?.filter((teacher: any) => teacher.validated)
 
   return {
     props: {
-      subjectSuggestions: validatedSubjects?.map((subject: any) =>
-        ({
-          label: subject.subject_name, 
-          value: subject.subject_name
-        } as RegexInputSuggestion)
-      ) ?? [],
-
-      teacherSuggestions: validatedTeachers?.map((teacher: any) =>
-        ({
-          label: `${teacher.first_name} ${teacher.last_name} (${teacher.abbreviation})`, 
-          value: teacher.abbreviation
-        } as RegexInputSuggestion)
-      ) ?? [],
+      subjects: subjects,
+      teachers: teachers,
     },
   }
 }

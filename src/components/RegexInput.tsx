@@ -5,6 +5,12 @@ export interface RegexInputSuggestion {
   value: string,
   label: string
 }
+export function SimpleInputSuggestion(suggestion: string): RegexInputSuggestion {
+  return { value: suggestion, label: suggestion }
+}
+export function SimpleInputSuggestions(suggestions: string[]): RegexInputSuggestion[] {
+  return suggestions.map(suggestion => SimpleInputSuggestion(suggestion))
+}
 
 export default function RegexInput({ id, label, partialRegex, regex, example, value, forceSuggestion, dropdownSuggestions, disabled }: {
   id: string,
@@ -28,7 +34,7 @@ export default function RegexInput({ id, label, partialRegex, regex, example, va
       if (regex && !regex.test(target.value)) validityState = "invalid"
 
       if (dropdownSuggestions) {
-        let dropdownSuggestionsValues = suggestions.map(suggestion => suggestion.value)
+        let dropdownSuggestionsValues = dropdownSuggestions.map(suggestion => suggestion.value)
         let includedInSuggestions = dropdownSuggestionsValues.includes(target.value)
 
         if (forceSuggestion && !includedInSuggestions) validityState = "invalid"
@@ -64,26 +70,20 @@ export default function RegexInput({ id, label, partialRegex, regex, example, va
     if (dropdownSuggestions) {
       if (e.target.value === "") setSuggestions(dropdownSuggestions)
       else setSuggestions(dropdownSuggestions.filter((suggestion) => 
-        suggestion.label.toLowerCase().includes(e.target.value.toLowerCase()) || 
-        suggestion.value.toLowerCase().includes(e.target.value.toLowerCase())
+        (suggestion.label.toLowerCase().includes(e.target.value.toLowerCase()) || 
+        suggestion.value.toLowerCase().includes(e.target.value.toLowerCase())) &&
+        suggestion.value !== e.target.value
       ))
     }
   }
 
   const acceptSuggestion = (e: any, suggestion: RegexInputSuggestion) => {
     let input = e.target.parentElement?.parentElement?.querySelector("input") as HTMLInputElement
-
-    input.value = suggestion.value
-    setCurrentValue(suggestion.value)
-
-    setSuggestions([])
-    updateInvalidState(input)
+    setRegexInputValue(input, suggestion.value)
   }
 
   const suggestionKeyEvent = (e: any, suggestion: RegexInputSuggestion) => {
-    if (e.key === "Enter") {
-      acceptSuggestion(e, suggestion)
-    }
+    if (e.key === "Enter") acceptSuggestion(e, suggestion)
   }
 
   useEffect(() => {
