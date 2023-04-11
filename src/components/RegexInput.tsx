@@ -1,7 +1,12 @@
 import styles from '@/styles/RegexInput.module.scss'
 import { ChangeEvent, useEffect, useState } from "react"
 
-export default function RegexInput({ id, label, partialRegex, regex, example, value, forceSuggestion, dropdownSuggestions }: {
+export interface RegexInputSuggestion {
+  value: string,
+  label: string
+}
+
+export default function RegexInput({ id, label, partialRegex, regex, example, value, forceSuggestion, dropdownSuggestions, disabled }: {
   id: string,
   label: string,
   partialRegex?: RegExp,
@@ -9,7 +14,8 @@ export default function RegexInput({ id, label, partialRegex, regex, example, va
   example: string,
   value?: string,
   forceSuggestion?: boolean,
-  dropdownSuggestions?: RegexInputSuggestion[]
+  dropdownSuggestions?: RegexInputSuggestion[], 
+  disabled?: boolean
 }) {
   const [currentValue, setCurrentValue] = useState("")
   const [suggestions, setSuggestions] = useState<RegexInputSuggestion[]>(dropdownSuggestions || [])
@@ -95,7 +101,7 @@ export default function RegexInput({ id, label, partialRegex, regex, example, va
   return (
     <div className={styles.regexInputContainer}>
       <label className={styles.regexInputLabel} htmlFor={id}>{label}</label>
-      <input id={id} className={styles.regexInput} type="text" onChange={onChange} placeholder={example} autoComplete="off"/>
+      <input id={id} className={styles.regexInput} type="text" onInput={onChange} placeholder={example} autoComplete="off" disabled={disabled}/>
       <div className={styles.regexInputDropdown}>
         { suggestions.map((suggestion, index) => 
           <div key={index} tabIndex={0} className={styles.regexInputDropdownItem} 
@@ -110,7 +116,7 @@ export default function RegexInput({ id, label, partialRegex, regex, example, va
   )
 }
 
-export interface RegexInputSuggestion {
-  value: string,
-  label: string
+export function setRegexInputValue(input: HTMLInputElement, value: string) {
+  input.value = value
+  input.dispatchEvent(new Event("input", { bubbles: true }))
 }

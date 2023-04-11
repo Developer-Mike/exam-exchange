@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/router"
 import useTranslation from "next-translate/useTranslation"
 import * as config from "@/config"
-import RegexInput, { RegexInputSuggestion } from "@/components/RegexInput"
+import RegexInput, { RegexInputSuggestion, setRegexInputValue } from "@/components/RegexInput"
 import ExamPage, { exportPage } from "@/components/ExamPage"
 import { supabase } from "@/lib/supabase"
 import { makeSnackbar } from "@/components/Snackbar"
@@ -15,8 +15,10 @@ interface UploadedImage {
   filename: string
 }
 
-export default function Upload({ subjectSuggestions, teacherSuggestions }: {
+export default function Upload({ subjects, subjectSuggestions, teachers, teacherSuggestions }: {
+  subjects: { subject_name: string, validated: boolean }[],
   subjectSuggestions: RegexInputSuggestion[],
+  teachers: { abbreviation: string, first_name: string, last_name: string, validated: boolean }[],
   teacherSuggestions: RegexInputSuggestion[]
 }) {
   const { t } = useTranslation("upload")
@@ -65,39 +67,77 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
     const examPagesImagesPromises = Array.prototype.map.call(examPagesCanvases, canvas => exportPage(canvas)) as Promise<File>[]
     const examPagesImages = await Promise.all(examPagesImagesPromises)
 
-    if (!(config.topicRegex.test(topic.value) && config.subjectRegex.test(subject.value) && config.teacherRegex.test(teacher.value) && config.classRegex.test(class_.value) && config.yearRegex.test(issueYear.value)
+    if (!(config.topicRegex.test(topic.value) && config.subjectRegex.test(subject.value) && config.teacherAbbreviationRegex.test(teacher.value) && config.classRegex.test(class_.value) && config.yearRegex.test(issueYear.value)
       && examPagesImages.length > 0 && examPagesImages.length <= config.maxImageCount && examPagesImages.every((page) => page.size <= config.maxImageSize)))
       return uploadFinished("data_invalid")
 
     setUploading(true)
     
     // Get Teacher ID
+    var teacherId = null
     const { data: teacherData, error: teacherError } = await supabase
       .from("teachers")
-      .select("id")
+      .select("id, first_name, last_name, validated")
       .eq("abbreviation", teacher.value)
+      .single()
 
-    // New teacher dialog
-    if (teacherError || teacherData?.length == 0) {
-      document.getElementById("newTeacherAbbreviation")?.setAttribute("value", teacher.value)
+    if (teacherData && teacherData.validated) teacherId = teacherData.id
+    else {
+      // New teacher dialog
+      let teacherAbbreviationInput = document.getElementById("newTeacherAbbreviation") as HTMLInputElement
+      let teacherFirstNameInput = document.getElementById("newTeacherFirstName") as HTMLInputElement
+      let teacherLastNameInput = document.getElementById("newTeacherLastName") as HTMLInputElement
+
+      if (teacherAbbreviationInput)
+        setRegexInputValue(teacherAbbreviationInput, teacher.value)
+
+      if (teacherData) {
+        setRegexInputValue(teacherFirstNameInput, teacherData.first_name)
+        setRegexInputValue(teacherLastNameInput, teacherData.last_name)
+      }
 
       let shouldAdd = await addNewTeacherDialog.current!()
       if (!shouldAdd) return uploadFinished("data_invalid")
-      
-      // TODO: Add teacher to database
-      console.log("TODO: Add teacher to database")
+
+      if (!config.nameRegex.test(teacherFirstNameInput.value) || !config.nameRegex.test(teacherLastNameInput.value))
+        return uploadFinished("data_invalid")
+
+      if (teacherData?.first_name != teacherFirstNameInput.value || teacherData?.last_name != teacherLastNameInput.value) {
+        // Add teacher to database with validated = false
+        const { data: newTeacherData, error: newTeacherError } = await supabase
+          .from("teachers")
+          .insert(
+            {
+              abbreviation: teacherAbbreviationInput.value,
+              first_name: teacherFirstNameInput.value,
+              last_name: teacherLastNameInput.value,
+              validated: false
+            }
+          )
+          .select()
+          .single()
+        
+        if (newTeacherError || !newTeacherData) return uploadFinished("server")
+
+        teacherId = newTeacherData.id
+      } else {
+        teacherId = teacherData.id
+      }
     }
 
     // Get Subject ID
+    var subjectId = null
     const { data: subjectData, error: subjectError } = await supabase
       .from("subjects")
       .select("id")
       .eq("subject_name", subject.value)
-
-    //TODO: New subject dialog
-
-    // Check if teacher and subject exist
-    if (teacherError || subjectError || teacherData?.length == 0 || subjectData?.length == 0) return uploadFinished("server")
+      .single()
+    
+    if (subjectData) subjectId = subjectData.id
+    else {
+      //TODO: New subject dialog
+      subjectId = "todo"
+    }
 
     // Upload Exam
     const { data: examData, error: examError } = await supabase
@@ -105,8 +145,8 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
       .insert(
         {
           topic: topic.value,
-          teacher_id: teacherData[0].id,
-          subject_id: subjectData[0].id,
+          teacher_id: teacherId,
+          subject_id: subjectId,
           class: class_.value,
           issue_year: issueYear.value,
           student_id: authContext.uid
@@ -187,7 +227,7 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
 
             <RegexInput id={styles.topic} label={t("topic")} partialRegex={config.partialTopicRegex} regex={config.topicRegex} example={t("topicExample")}/>
             <RegexInput id={styles.subject} label={t("subject")} partialRegex={config.partialSubjectRegex} regex={config.subjectRegex} example={t("subjectExample")} dropdownSuggestions={subjectSuggestions}/>
-            <RegexInput id={styles.teacher} label={t("teacher")} partialRegex={config.partialTeacherRegex} regex={config.teacherRegex} example={t("teacherExample")} dropdownSuggestions={teacherSuggestions}/>
+            <RegexInput id={styles.teacher} label={t("teacher")} partialRegex={config.partialTeacherAbbreviationRegex} regex={config.teacherAbbreviationRegex} example={t("teacherExample")} dropdownSuggestions={teacherSuggestions}/>
             <RegexInput id={styles.class} label={t("class")} partialRegex={config.partialClassRegex} regex={config.classRegex} example={t("classExample")}/>
             <RegexInput id={styles.issueYear} label={t("yearIssued")} partialRegex={config.partialYearRegex} regex={config.yearRegex} example={new Date().getFullYear().toString()}/>
           </div>
@@ -208,9 +248,9 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
         { uploading && <div className={styles.uploadingOverlay}>{t("uploading")}</div> }
 
         <Dialog reference={addNewTeacherDialog} title={t("registerTeacher")} negative={t("cancel")} positive={t("register")}>
-          <RegexInput id={"newTeacherAbbreviation"} label={t("registerTeacherAbbreviation")} partialRegex={config.partialTeacherRegex} regex={config.teacherRegex} example={t("teacherExample")} />
-          <RegexInput id={"newTeacherFirstName"} label={t("registerTeacherFirstName")} regex={config.teacherRegex} example="..." />
-          <RegexInput id={"newTeacherLastName"} label={t("registerTeacherLastName")} regex={config.teacherRegex} example="..." />
+          <RegexInput id={"newTeacherAbbreviation"} label={t("registerTeacherAbbreviation")} partialRegex={config.partialTeacherAbbreviationRegex} regex={config.teacherAbbreviationRegex} example={t("teacherExample")} disabled />
+          <RegexInput id={"newTeacherFirstName"} label={t("registerTeacherFirstName")} partialRegex={config.partialNameRegex} regex={config.nameRegex} example={t("registerTeacherFirstNameExample")} />
+          <RegexInput id={"newTeacherLastName"} label={t("registerTeacherLastName")} partialRegex={config.partialNameRegex} regex={config.nameRegex} example={t("registerTeacherLastNameExample")} />
         </Dialog>
       </main>
     </>
@@ -220,22 +260,26 @@ export default function Upload({ subjectSuggestions, teacherSuggestions }: {
 export async function getStaticProps() {
   const { data: subjects, error: subjectsError } = await supabase
     .from("subjects")
-    .select("subject_name")
+    .select("subject_name, validated")
+  const validatedSubjects = subjects?.filter((subject: any) => subject.validated)
 
   const { data: teachers, error: teachersError } = await supabase
     .from("teachers")
-    .select("abbreviation, first_name, last_name")
+    .select("abbreviation, first_name, last_name, validated")
+  const validatedTeachers = teachers?.filter((teacher: any) => teacher.validated)
 
   return {
     props: {
-      subjectSuggestions: subjects?.map((subject: any) =>
+      subjects: subjects ?? [],
+      subjectSuggestions: validatedSubjects?.map((subject: any) =>
         ({
           label: subject.subject_name, 
           value: subject.subject_name
         } as RegexInputSuggestion)
       ) ?? [],
 
-      teacherSuggestions: teachers?.map((teacher: any) =>
+      teachers: teachers ?? [],
+      teacherSuggestions: validatedTeachers?.map((teacher: any) =>
         ({
           label: `${teacher.first_name} ${teacher.last_name} (${teacher.abbreviation})`, 
           value: teacher.abbreviation

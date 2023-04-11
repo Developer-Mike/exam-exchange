@@ -9,7 +9,7 @@
     "teacher": "Teacher",
     "teacherExample": "DaO",
     "class": "Class",
-    "classExample": "N1A",
+    "classExample": "A1C",
     "yearIssued": "Issue Year",
     "uploadNow": "Upload",
     "legalAgreement": "By uploading this exam, you agree to the terms of service and the privacy policy of the site.",
@@ -19,7 +19,9 @@
     "registerTeacher": "Register new teacher",
     "registerTeacherAbbreviation": "Teacher's Abbreviation",
     "registerTeacherFirstName": "Teacher's First Name",
+    "registerTeacherFirstNameExample": "John",
     "registerTeacherLastName": "Teacher's Last Name",
+    "registerTeacherLastNameExample": "Doe",
     "cancel": "Cancel",
     "register": "Register"
 }
