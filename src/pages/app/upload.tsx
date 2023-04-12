@@ -1,14 +1,15 @@
 import styles from "@/styles/Upload.module.scss"
-import { useAuthContext } from "@/components/AuthContext"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/router"
 import useTranslation from "next-translate/useTranslation"
 import * as config from "@/config"
 import RegexInput, { RegexInputRef, SimpleInputSuggestion, SimpleInputSuggestions } from "@/components/RegexInput"
 import ExamPage, { exportPage } from "@/components/ExamPage"
-import { supabase } from "@/lib/supabase"
 import { makeSnackbar } from "@/components/Snackbar"
 import Dialog, { DialogRef } from "@/components/Dialog"
+import { useSupabaseClient } from "@supabase/auth-helpers-react"
+import { GetServerSidePropsContext } from "next/types"
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs"
 
 interface UploadedImage {
   source: MediaSource,
@@ -22,7 +23,7 @@ export default function Upload({ subjects, teachers }: {
   const { t } = useTranslation("upload")
 
   const router = useRouter()
-  const authContext = useAuthContext()
+  const supabaseClient = useSupabaseClient()
 
   // Suggestions for inputs
   const subjectSuggestions = useMemo(() => subjects.filter(subject => subject.validated).map(subject => (
@@ -61,7 +62,7 @@ export default function Upload({ subjects, teachers }: {
         makeSnackbar(t("uploadDataIncomplete"), "error")
         break
       default:
-        router.push("/upload-success")
+        router.push("/app/upload-success")
         break
     }
 
@@ -87,7 +88,7 @@ export default function Upload({ subjects, teachers }: {
     
     // Get Teacher ID
     var teacherId: string | null = null
-    const { data: teacherData, error: teacherError } = await supabase
+    const { data: teacherData, error: teacherError } = await supabaseClient
       .from("teachers")
       .select("id, first_name, last_name, validated")
       .eq("abbreviation", teacherInput.value)
@@ -121,7 +122,7 @@ export default function Upload({ subjects, teachers }: {
       var existingTeacher = teacherData?.find(teacher => teacher.first_name == newTeacherFirstNameInput.current!.getValue() && teacher.last_name == newTeacherLastNameInput.current!.getValue())
       if (!existingTeacher) {
         // Add teacher to database with validated = false
-        const { data: newTeacherData, error: newTeacherError } = await supabase
+        const { data: newTeacherData, error: newTeacherError } = await supabaseClient
           .from("teachers")
           .insert(
             {
@@ -140,7 +141,7 @@ export default function Upload({ subjects, teachers }: {
 
     // Get Subject ID
     var subjectId: string | null = null
-    const { data: subjectData, error: subjectError } = await supabase
+    const { data: subjectData, error: subjectError } = await supabaseClient
       .from("subjects")
       .select("id, validated")
       .eq("subject_name", subjectInput.value)
@@ -150,7 +151,7 @@ export default function Upload({ subjects, teachers }: {
     else if (subjectData && subjectData.length > 0) subjectId = subjectData[0].id
     else {
       // Add the subject to database with validated = false
-      const { data: newSubjectData, error: newSubjectError } = await supabase
+      const { data: newSubjectData, error: newSubjectError } = await supabaseClient
         .from("subjects")
         .insert(
           {
@@ -164,8 +165,11 @@ export default function Upload({ subjects, teachers }: {
       subjectId = newSubjectData.id
     }
 
+    let uid = (await supabaseClient.auth.getUser()).data.user?.id
+    if (!uid) return uploadFinished("server")
+
     // Upload Exam
-    const { data: examData, error: examError } = await supabase
+    const { data: examData, error: examError } = await supabaseClient
       .from("uploaded_exams")
       .insert(
         {
@@ -174,7 +178,7 @@ export default function Upload({ subjects, teachers }: {
           subject_id: subjectId,
           class: classInput.value,
           issue_year: issueYearInput.value,
-          student_id: authContext.uid
+          student_id: uid,
         }
       )
       .select()
@@ -185,10 +189,10 @@ export default function Upload({ subjects, teachers }: {
     // Upload Images
     var uploadImagesPromises = []
     for (let i = 0; i < examPagesImages.length; i++) {
-      uploadImagesPromises.push(supabase
+      uploadImagesPromises.push(supabaseClient
         .storage
         .from("exam-images")
-        .upload(`${authContext.uid}/${examData[0].id}/${i}.webp`, examPagesImages[i]))
+        .upload(`${uid}/${examData[0].id}/${i}.webp`, examPagesImages[i]))
     }
     const uploadImagesResults = await Promise.all(uploadImagesPromises)
     if (uploadImagesResults.some(result => result.error)) return uploadFinished("server")
@@ -196,15 +200,6 @@ export default function Upload({ subjects, teachers }: {
     // Upload Finished
     uploadFinished(null)
   }
-
-  useEffect(() => {
-    if (authContext != undefined && authContext == null) {
-      router.push("/login")
-      return
-    }
-
-    if (window && process.env.NODE_ENV !== "development") window.onbeforeunload = e => ""
-  }, [authContext])
 
   const removeUploadedFile = (index: number) => {
     let newUploadedFiles = [...uploadedPages]
@@ -223,6 +218,10 @@ export default function Upload({ subjects, teachers }: {
 
     setUploadedPages(newUploadedFiles)
   }
+
+  useEffect(() => {
+    if (window && process.env.NODE_ENV !== "development") window.onbeforeunload = e => ""
+  })
 
   return (
     <>
@@ -265,7 +264,7 @@ export default function Upload({ subjects, teachers }: {
 
             <div id={styles.creditReward}>
               +1
-              <img src="coin-inverted.svg"/>
+              <img src="/coin-inverted.svg"/>
             </div>
           </button>
         </div>
@@ -282,7 +281,9 @@ export default function Upload({ subjects, teachers }: {
   )
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  const supabase = createServerSupabaseClient(ctx)
+
   const { data: subjects, error: subjectsError } = await supabase
     .from("subjects")
     .select("subject_name, validated")

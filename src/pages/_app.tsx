@@ -1,22 +1,32 @@
 import '@/styles/globals.scss'
-import type { AppProps } from 'next/app'
 import Navbar from '@/components/Navbar'
-import AuthContext from '@/components/AuthContext'
-import Head from 'next/head'
 import Snackbar from '@/components/Snackbar'
+import Head from 'next/head'
+import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs'
+import { SessionContextProvider, Session } from '@supabase/auth-helpers-react'
+import { useState } from 'react'
+import { AppProps } from 'next/app'
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps }: AppProps<{
+  initialSession: Session
+}>) {
+  // Create a new supabase browser client on every first render.
+  const [supabaseClient] = useState(() => createBrowserSupabaseClient())
+
   return (
     <>
       <Head>
         <title>Exam Exchange</title>
       </Head>
       
-      <AuthContext>
+      <SessionContextProvider
+        supabaseClient={supabaseClient}
+        initialSession={pageProps.initialSession}>
+
         <Navbar/>
         <Component {...pageProps} />
         <Snackbar/>
-      </AuthContext>
+      </SessionContextProvider>
     </>
   )
 }

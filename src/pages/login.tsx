@@ -2,22 +2,22 @@ import Head from 'next/head'
 import styles from '@/styles/Login.module.scss'
 import { useEffect, useState } from 'react'
 import { isEmailValid } from '@/utils/user-helper'
-import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/router'
-import { useAuthContext } from '@/components/AuthContext'
 import useTranslation from 'next-translate/useTranslation'
+import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 
 export default function Login() {
   const { t } = useTranslation('login')
 
   const router = useRouter()
-  const authContext = useAuthContext()
+  const supabaseClient = useSupabaseClient()
+  const user = useUser()
   const [isInvalidEmail, setIsInvalidEmail] = useState(false)
   const [emailSent, setEmailSent] = useState(false)
 
   useEffect(() => {
-    if (authContext) router.push("/")
-  }, [authContext])
+    if (user) router.push("/")
+  }, [user])
   
   async function login() {
     let email = (document.getElementById(styles.email) as HTMLInputElement).value
@@ -28,7 +28,7 @@ export default function Login() {
 
     setEmailSent(true)
 
-    let { error } = await supabase.auth.signInWithOtp({
+    let { error } = await supabaseClient.auth.signInWithOtp({
       email: email,
       options: {
         emailRedirectTo: window.location.origin,

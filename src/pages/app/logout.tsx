@@ -1,14 +1,14 @@
-import { supabase } from '@/lib/supabase'
-import Head from 'next/head'
+import styles from '@/styles/Logout.module.scss'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
-import styles from '@/styles/Logout.module.scss'
+import { useSupabaseClient } from '@supabase/auth-helpers-react'
 
 export default function Logout() {
   const router = useRouter()
+  const supabaseClient = useSupabaseClient()
   
   useEffect(() => { (async () => {
-    await supabase.auth.signOut()
+    await supabaseClient.auth.signOut()
     router.push("/")
   })() })
   

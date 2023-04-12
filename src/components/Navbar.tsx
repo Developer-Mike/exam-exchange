@@ -1,10 +1,13 @@
 import styles from '@/styles/Navbar.module.scss'
 import { schoolName } from "@/config"
-import { useEffect } from "react"
-import { useAuthContext } from './AuthContext'
+import { useEffect, useState } from "react"
+import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
+import { getFirstName } from '@/utils/user-helper'
 
 export default function Navbar() {
-  const authContext = useAuthContext()
+  const supabaseClient = useSupabaseClient()
+  const user = useUser()
+  const [credits, setCredits] = useState(null)
 
   const expandProfileDropdown = () => {
     document.getElementById(styles.dropdown)?.classList.toggle(styles.expanded)
@@ -15,13 +18,18 @@ export default function Navbar() {
   }
 
   useEffect(() => {
-    document.addEventListener("click", (e) => {
+    document.onclick = (e) => {
       if (document.getElementById(styles.user)?.contains(e.target as Node)) return
       
       let dropdown = document.getElementById(styles.dropdown)
       dropdown && dropdown.classList.remove(styles.expanded)
+    }
+
+    supabaseClient.from("students").select("credits").eq("id", user?.id).single().then(response => {
+      if (response.error) return
+      setCredits(response.data?.credits)
     })
-  }, [])
+  })
 
   return (
     <div id={styles.navbar}>
@@ -39,20 +47,20 @@ export default function Navbar() {
         </div>
 
         <div id={styles.account}>
-          { authContext ? (
+          { user ? (
             <div id={styles.user} onClick={expandProfileDropdown}>
               <div id={styles.userDetails}>
-                <img id={styles.avatar} src={"/school-icon.svg" /*authContext.avatar*/} alt="Avatar" />
+                <img id={styles.avatar} src={"/school-icon.svg"} alt="Avatar" />
                 <div>
-                  <strong>{authContext.username}</strong><br/>
-                  <span id={styles.balance}>{authContext.credits}<img id={styles.coin} src="/coin.svg" alt="Coin" /></span>
+                  <strong>{getFirstName(user.email!)}</strong><br/>
+                  <span id={styles.balance}>{credits ?? "..."}<img id={styles.coin} src="/coin.svg" alt="Coin" /></span>
                 </div>
                 <span id={styles.accountDropdownArrow} className="material-symbols-outlined">expand_more</span>
               </div>
 
               <div id={styles.dropdown}>
-                <DropdownElement href="/upload" text="Upload" icon="upload" />
-                <DropdownElement href="/logout" text="Logout" icon="logout" />
+                <DropdownElement href="/app/upload" text="Upload" icon="upload" />
+                <DropdownElement href="/app/logout" text="Logout" icon="logout" />
               </div>
             </div>
           ) : (

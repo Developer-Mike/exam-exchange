@@ -11,8 +11,8 @@ export default function UploadSuccess() {
         <p className={styles.uploadInfo}>{t("waitForVerification")}</p>
 
         <div id={styles.options}>
-          <a href="/dashboard"><button id={styles.goToDashboard}>{t("goToDashboard")}</button></a>
-          <a href="/upload"><button id={styles.uploadAnother}>{t("uploadAnother")}</button></a>
+          <a href="/app/dashboard"><button id={styles.goToDashboard}>{t("goToDashboard")}</button></a>
+          <a href="/app/upload"><button id={styles.uploadAnother}>{t("uploadAnother")}</button></a>
         </div>
       </main>
     </>
