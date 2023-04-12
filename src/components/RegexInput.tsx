@@ -125,6 +125,12 @@ export default function RegexInput({ reference, id, label, partialRegex, regex, 
 
     let input = document.getElementById(id) as HTMLInputElement
     if (input) {
+      let suggestionsContainer = input.parentElement?.querySelector(`.${styles.regexInputDropdown}`) as HTMLDivElement
+      if (suggestionsContainer) {
+        suggestionsContainer.style.width = input.offsetWidth + "px"
+        suggestionsContainer.style.fontSize = window.getComputedStyle(input).fontSize
+      }
+
       updateInvalidState(input)
       updateSuggestions(input)
     }

@@ -4,81 +4,82 @@
   display: flex;
   flex-direction: column;
 
+  .regexInputLabel {
+    width: min-content;
+    white-space: nowrap;
+    
+    color: $on-surface-color;
+  
+    &[data-validity="valid"] {
+      color: $on-surface-color;
+    }
+  
+    &[data-validity="unknown"] {
+      color: $warning-color;
+    }
+  
+    &[data-validity="invalid"] {
+      color: $error-color;
+    }
+  }
+
   &:focus-within > .regexInputDropdown {
     display: flex;
   }
-}
 
-.regexInputLabel {
-  width: min-content;
-  white-space: nowrap;
+  .regexInputDropdown {
+    z-index: 10;
+    position: absolute;
+    top: 100%;
+    left: 0;
   
-  color: $on-surface-color;
-
-  &[data-validity="valid"] {
-    color: $on-surface-color;
-  }
-
-  &[data-validity="unknown"] {
-    color: $warning-color;
-  }
-
-  &[data-validity="invalid"] {
-    color: $error-color;
-  }
-}
-
-.regexInputDropdown {
-  z-index: 10;
-  position: absolute;
-  top: 100%;
-  left: 0;
-
-  min-width: 50%;
-
-  max-height: 10rem;
-  overflow: hidden auto;
-
-  display: none; //flex
-  flex-direction: column;
-
-  background-color: $surface-color;
-  border-radius: 8px;
-  box-shadow: rgba($on-surface-color, 0.5) 0px 6px 12px -2px;
-
-  &::-webkit-scrollbar {
-    width: 10px;
-  }
+    min-width: 50%;
   
-  &::-webkit-scrollbar-track {
-    display: none;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba($on-surface-color, 0.5);
+    max-height: 10rem;
+    overflow: hidden auto;
+  
+    display: none; //flex
+    flex-direction: column;
+  
+    background-color: $surface-color;
     border-radius: 8px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba($on-surface-color, 0.7);
-  }
-
-  .regexInputDropdownItem {
-    margin: 5px;
-    padding: 10px;
-    font-size: 1.5rem;
-
-    user-select: none;
-    cursor: pointer;
-
-    border-radius: 8px;
-
-    &:focus {
-      outline: 2px solid $on-surface-color;
+    box-shadow: rgba($on-surface-color, 0.5) 0px 6px 12px -2px;
+  
+    &::-webkit-scrollbar {
+      width: 10px;
     }
+    
+    &::-webkit-scrollbar-track {
+      display: none;
+    }
+  
+    &::-webkit-scrollbar-thumb {
+      background: rgba($on-surface-color, 0.5);
+      border-radius: 8px;
+    }
+  
+    &::-webkit-scrollbar-thumb:hover {
+      background: rgba($on-surface-color, 0.7);
+    }
+  
+    .regexInputDropdownItem {
+      margin: 5px;
+      padding: 10px;
 
-    &:hover {
-      background-color: rgba($on-surface-color, 0.1);
+      font-size: inherit;
+  
+      user-select: none;
+      cursor: pointer;
+  
+      border-radius: 8px;
+  
+      &:focus {
+        outline: 2px solid $on-surface-color;
+      }
+  
+      &:hover {
+        background-color: rgba($on-surface-color, 0.1);
+      }
     }
   }
 }
