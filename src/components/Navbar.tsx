@@ -53,7 +53,7 @@ export default function Navbar() {
                 <img id={styles.avatar} src={"/school-icon.svg"} alt="Avatar" />
                 <div>
                   <strong>{getFirstName(user.email!)}</strong><br/>
-                  <span id={styles.balance}>{credits ?? "..."}<img id={styles.coin} src="/coin.svg" alt="Coin" /></span>
+                  <span id={styles.balance}>{credits ?? "-"}<img id={styles.coin} src="/coin.svg" alt="Coin" /></span>
                 </div>
                 <span id={styles.accountDropdownArrow} className="material-symbols-outlined">expand_more</span>
               </div>

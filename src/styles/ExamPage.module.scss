@@ -31,6 +31,11 @@
 
       user-select: none;
       cursor: pointer;
+
+      &[data-active="true"] {
+        color: $on-accent-color;
+        background-color: $accent-color;
+      }
     }
 
     .deleteImage {
