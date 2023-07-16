@@ -115,8 +115,8 @@ export default function Upload({ subjects, teachers }: {
 
       let shouldAdd = await addNewTeacherDialog.current!.show()
       if (!shouldAdd) return uploadFinished("data_invalid")
-
-      if (!config.nameRegex.test(newTeacherFirstNameInput.current!.getValue()) || !config.nameRegex.test(newTeacherLastNameInput.current!.getValue()))
+      
+      if (!newTeacherFirstNameInput.current!.isValid() || !newTeacherLastNameInput.current!.isValid())
         return uploadFinished("data_invalid")
 
       var existingTeacher = teacherData?.find(teacher => teacher.first_name == newTeacherFirstNameInput.current!.getValue() && teacher.last_name == newTeacherLastNameInput.current!.getValue())

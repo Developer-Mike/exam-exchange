@@ -1,0 +1,75 @@
+#main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.exam {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  width: min(80vw, 1200px);
+
+  margin: 10px 0;
+  padding: 10px 20px;
+
+  border-radius: 8px;
+  box-shadow: rgba($on-surface-color, 0.2) 0px 0.125em 0.5em;
+
+  .examImagesContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    .examImage {
+      height: 120px;
+      margin-right: 10px;
+
+      border-radius: 6px;
+    }
+  }
+
+  .examTopic {
+    margin-left: 10px;
+    margin-right: auto;
+
+    font-size: 1.5rem;
+  }
+
+  .examInfo {
+    display: flex;
+    flex-direction: column;
+    
+    min-width: 200px;
+    margin-right: 25px;
+
+    .notValidated {
+      color: $error-color;
+    }
+  }
+
+  .examActions {
+    display: flex;
+    flex-direction: column;
+
+    button {
+      font-size: 1.25rem;
+      margin: 5px 0;
+    }
+
+    .banExamButton {
+      background-color: $error-color;
+      color: $on-error-color;
+    }
+
+    .rejectExamButton {
+      background-color: $surface-color;
+      outline: 2px solid $on-surface-color;
+    }
+
+    .approveExamButton {
+      background-color: $success-color;
+      color: $on-success-color;
+    }
+  }
+}

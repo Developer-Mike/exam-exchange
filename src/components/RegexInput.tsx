@@ -15,6 +15,7 @@ export function SimpleInputSuggestions(suggestions: string[]): RegexInputSuggest
 export interface RegexInputRef {
   getValue: () => string
   setValue: (value: string) => void
+  isValid: () => boolean
   setSuggestions: (suggestions: RegexInputSuggestion[]) => void
   setDisabled: (disabled: boolean) => void
 }
@@ -112,6 +113,9 @@ export default function RegexInput({ reference, id, label, partialRegex, regex, 
         setValue: (value: string) => {
           let input = document.getElementById(id) as HTMLInputElement
           if (input) setRegexInputValue(input, value)
+        },
+        isValid: () => {
+          return regex ? regex.test(currentValue) : true
         },
         setSuggestions: (suggestions: RegexInputSuggestion[]) => {
           setSuggestions(suggestions)

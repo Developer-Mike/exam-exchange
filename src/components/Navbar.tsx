@@ -43,7 +43,7 @@ export default function Navbar() {
       <div id={styles.collapsible}>
         <div id={styles.links}>
           <a href="/">Home</a>
-          <a href="/dashboard">Dashboard</a>
+          <a href="/app/dashboard">Dashboard</a>
         </div>
 
         <div id={styles.account}>

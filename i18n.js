@@ -7,6 +7,7 @@ module.exports = {
     '/login': ['login'],
     '/app/upload': ['upload'],
     '/app/upload-success': ['upload-success'],
+    '/admin/validate': ['validate'],
   }
 }
   

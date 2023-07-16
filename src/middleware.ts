@@ -9,23 +9,35 @@ export async function middleware(req: NextRequest) {
   // Create authenticated Supabase Client.
   const supabase = createMiddlewareSupabaseClient({ req, res })
   // Check if we have a session
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
+  const { data: { session } } = await supabase.auth.getSession()
 
-  // Check auth condition
-  if (projectConfig.mailRegex.test(session?.user.email ?? "")) {
-    // Authentication successful, forward request to protected route.
-    return res
+  if (req.nextUrl.pathname.startsWith('/app')) {
+    // Check auth condition
+    if (projectConfig.mailRegex.test(session?.user.email ?? "")) {
+      // Authentication successful, forward request to protected route.
+      return res
+    }
+
+    // Auth condition not met, redirect to login page.
+    const redirectUrl = req.nextUrl.clone()
+    redirectUrl.pathname = "/login"
+    // redirectUrl.searchParams.set(`redirectedFrom`, req.nextUrl.pathname)
+    return NextResponse.redirect(redirectUrl)
+  } else if (req.nextUrl.pathname.startsWith('/admin')) {
+    // Check auth condition
+    if (projectConfig.adminEmails.some((regex) => regex.test(session?.user.email ?? ""))) {
+      // Authentication successful, forward request to protected route.
+      return res
+    }
+
+    // Auth condition not met, redirect to home page.
+    const redirectUrl = req.nextUrl.clone()
+    redirectUrl.pathname = "/"
+    // redirectUrl.searchParams.set(`redirectedFrom`, req.nextUrl.pathname)
+    return NextResponse.redirect(redirectUrl)
   }
-
-  // Auth condition not met, redirect to home page.
-  const redirectUrl = req.nextUrl.clone()
-  redirectUrl.pathname = "/login"
-  // redirectUrl.searchParams.set(`redirectedFrom`, req.nextUrl.pathname)
-  return NextResponse.redirect(redirectUrl)
 }
 
 export const config = {
-  matcher: '/app/:path*',
+  matcher: ['/app/:path*', '/admin/:path*'],
 }
