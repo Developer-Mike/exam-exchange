@@ -1,9 +1,12 @@
 import styles from '@/styles/Validate.module.scss'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { GetServerSidePropsContext } from 'next'
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs'
 import useTranslation from 'next-translate/useTranslation'
+import { banDuration } from '@/config'
+import Dialog, { DialogRef } from '@/components/Dialog'
+import { makeSnackbar } from '@/components/Snackbar'
 
 export default function Validate({ serviceKey, unverifiedExams, subjects, teachers }: {
   serviceKey: string
@@ -12,17 +15,73 @@ export default function Validate({ serviceKey, unverifiedExams, subjects, teache
   teachers: any[]
 }) {
   const { t } = useTranslation('validate')
-
   const supabaseServiceClient = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL as string,
     serviceKey
   )
 
+  const [exams, setExams] = useState<any[]>(unverifiedExams)
   const [images, setImages] = useState<{[key: string]: string[]}|null>(null)
 
-  useEffect(() => {
-    setImages({})
+  const confirmDialogRef = useRef<DialogRef>()
+  const dialogTextRef = useRef<HTMLParagraphElement>(null)
 
+  const confirmDialog = (dialogText: string, onConfirm: () => Promise<boolean>) => {
+    if (dialogTextRef.current) dialogTextRef.current.innerText = dialogText
+
+    confirmDialogRef.current?.show().then(async (result) => {
+      if (!result) return
+      let success = await onConfirm()
+      if (!success) makeSnackbar(t("action_failed"), "error")
+    })
+  }
+
+  const banUser = (exam: any) => {
+    confirmDialog(`${t("ban")} ${exam.student_id}?`, async () => {
+      const { data, error } = await supabaseServiceClient.auth.admin.updateUserById(exam.student_id, {
+        ban_duration: banDuration
+      })
+
+      return !error
+    })
+  }
+
+  const rejectExam = (exam: any) => {
+    confirmDialog(`${t("reject")} ${exam.topic}?`, async () => {
+      const { error: dbError } = await supabaseServiceClient
+        .from("uploaded_exams")
+        .delete()
+        .eq("id", exam.id)
+
+      let examImagesPath = `${exam.student_id}/${exam.id}`
+      const { data: images, error: storageListError } = await supabaseServiceClient.storage
+        .from("exam-images")
+        .list(examImagesPath)
+      const examImagesList = images?.map(image => `${examImagesPath}/${image.name}`) ?? []
+      
+      const { error: storageError } = await supabaseServiceClient
+        .storage
+        .from('exam-images')
+        .remove(examImagesList)
+      
+      if (!dbError && !storageListError && !storageError) setExams(exams.filter(e => e.id !== exam.id))
+      return !dbError && !storageListError && !storageError
+    })
+  }
+
+  const approveExam = (exam: any) => {
+    confirmDialog(`${t("approve")} ${exam.topic}?`, async () => {
+      const { data, error } = await supabaseServiceClient
+        .from("uploaded_exams")
+        .update({ validated: true })
+        .eq("id", exam.id)
+
+      if (!error) setExams(exams.filter(e => e.id !== exam.id))
+      return !error
+    })
+  }
+
+  useEffect(() => {
     for (const exam of unverifiedExams) {
       let examPath = `${exam.student_id}/${exam.id}`
 
@@ -56,7 +115,7 @@ export default function Validate({ serviceKey, unverifiedExams, subjects, teache
   
   return <>
     <main id={styles.main}>
-      { unverifiedExams.map((exam: any) => {
+      { exams.map((exam: any) => {
         let subject = subjects.filter(subject => subject.id == exam.subject_id)[0]
         let teacher = teachers.filter(teacher => teacher.id == exam.teacher_id)[0]
 
@@ -77,13 +136,19 @@ export default function Validate({ serviceKey, unverifiedExams, subjects, teache
             </div>
 
             <div className={styles.examActions}>
-              <button className={styles.banExamButton}>{t("ban")}</button>
-              <button className={styles.rejectExamButton}>{t("reject")}</button>
-              <button className={styles.approveExamButton}>{t("approve")}</button>
+              <button className={styles.banExamButton} onClick={() => banUser(exam)}>{t("ban")}</button>
+              <button className={styles.rejectExamButton} onClick={() => rejectExam(exam)}>{t("reject")}</button>
+              <button className={styles.approveExamButton} onClick={() => approveExam(exam)}>{t("approve")}</button>
             </div>
           </div>
         )
       }) }
+
+      { exams.length == 0 && <h2 className={`fullscreen ${styles.noExams}`}>{t("no_exams")}</h2> }
+
+      <Dialog reference={confirmDialogRef} title={t("confirm")} positive={t("confirm")} negative={t("cancel")}>
+        <p ref={dialogTextRef}></p>
+      </Dialog>
     </main>
   </>
 }
@@ -115,7 +180,3 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     },
   }
 }
-
-/*const { data, error } = await supabaseServiceClient.auth.admin.updateUserById("f97afd77-399d-4438-9899-53e580bb2269", {
-  ban_duration: "876600h"
-})*/

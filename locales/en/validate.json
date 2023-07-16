@@ -1,5 +1,9 @@
 {
     "ban": "Ban",
     "reject": "Reject",
-    "approve": "Approve"
+    "approve": "Approve",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "action_failed": "Action failed",
+    "no_exams": "No unverified exams found."
 }
