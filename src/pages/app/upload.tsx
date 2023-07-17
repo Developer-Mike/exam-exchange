@@ -53,13 +53,15 @@ export default function Upload({ subjects, teachers }: {
     e.target.files = new DataTransfer().files
   }
 
-  const uploadFinished = (error: null | "server" | "data_invalid") => {
+  const uploadFinished = (error: null | "server" | "data_invalid" | "cancel") => {
     switch (error) {
       case "server":
         makeSnackbar(t("uploadServerError"), "error")
         break
       case "data_invalid":
         makeSnackbar(t("uploadDataIncomplete"), "error")
+        break
+      case "cancel":
         break
       default:
         router.push("/app/upload-success")
@@ -114,7 +116,7 @@ export default function Upload({ subjects, teachers }: {
       }
 
       let shouldAdd = await addNewTeacherDialog.current!.show()
-      if (!shouldAdd) return uploadFinished("data_invalid")
+      if (!shouldAdd) return uploadFinished("cancel")
       
       if (!newTeacherFirstNameInput.current!.isValid() || !newTeacherLastNameInput.current!.isValid())
         return uploadFinished("data_invalid")

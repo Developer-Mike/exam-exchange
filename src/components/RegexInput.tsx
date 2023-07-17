@@ -31,7 +31,9 @@ export default function RegexInput({ reference, id, label, partialRegex, regex, 
   dropdownSuggestions?: RegexInputSuggestion[], 
   disabled?: boolean
 }) {
-  const [currentValue, setCurrentValue] = useState("")
+  const [_currentValue, setCurrentValue] = useState("")
+  const getCurrentValue = () => _currentValue != "" ? _currentValue : (document.getElementById(id) as HTMLInputElement).value
+
   const [suggestions, setSuggestions] = useState<RegexInputSuggestion[] | undefined>(dropdownSuggestions)
   const [currentSuggestions, setCurrentSuggestions] = useState<RegexInputSuggestion[]>([])
   const [disabledState, setDisabledState] = useState(disabled || false)
@@ -86,7 +88,7 @@ export default function RegexInput({ reference, id, label, partialRegex, regex, 
           e.target.value = newValueModified
           setCurrentValue(newValueModified)
         } else {
-          e.target.value = currentValue
+          e.target.value = getCurrentValue()
         }
       }
     }
@@ -108,14 +110,14 @@ export default function RegexInput({ reference, id, label, partialRegex, regex, 
     if (reference) {
       reference.current = {
         getValue: () => {
-          return currentValue
+          return getCurrentValue()
         },
         setValue: (value: string) => {
           let input = document.getElementById(id) as HTMLInputElement
           if (input) setRegexInputValue(input, value)
         },
         isValid: () => {
-          return regex ? regex.test(currentValue) : true
+          return regex ? regex.test(getCurrentValue()) : true
         },
         setSuggestions: (suggestions: RegexInputSuggestion[]) => {
           setSuggestions(suggestions)
