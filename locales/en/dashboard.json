@@ -2,7 +2,11 @@
     "hello": "Hello",
     "uploaded_exams": "Uploaded Exams",
     "upload_exam": "Upload New Exam",
+    "loading": "Loading...",
     "validated": "Verified",
     "not_validated": "Under verification",
-    "upcoming_exams": "Upcoming Exams"
+    "upcoming_exams": "Upcoming Exams",
+    "add_upcoming_exam": "Add Upcoming Exam",
+    "access_expiring_in": "Access expiring in {days} days.",
+    "browse_exams": "Browse Exams"
 }

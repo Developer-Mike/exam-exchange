@@ -88,12 +88,12 @@ WITH CHECK (
 
 CREATE TABLE public.upcoming_exams (
     id SERIAL PRIMARY KEY,
-    student_id UUID REFERENCES students(id),
+    student_id UUID REFERENCES students(id) NOT NULL,
     register_date TIMESTAMPTZ NOT NULL default now(),
     subject_id SERIAL REFERENCES subjects(id),
     teacher_id SERIAL REFERENCES teachers(id),
     class VARCHAR(3) NOT NULL,
-    topic TEXT
+    topic TEXT NOT NULL
 );
 ALTER TABLE public.upcoming_exams ENABLE ROW LEVEL SECURITY;
 
@@ -103,6 +103,14 @@ FOR DELETE
 USING (
     auth.uid() = student_id
 );
+
+CREATE POLICY "Allow read for themselves" 
+ON public.upcoming_exams
+FOR SELECT
+USING (
+    auth.uid() = student_id
+);
+
 CREATE POLICY "Allow insert for themselves"
 ON public.upcoming_exams
 FOR INSERT 
@@ -153,7 +161,7 @@ WITH CHECK (
 
 CREATE POLICY "Allow read for self" 
 ON public.uploaded_exams
-FOR READ
+FOR SELECT
 USING (
     auth.uid() = student_id
 );

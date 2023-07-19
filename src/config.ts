@@ -21,4 +21,5 @@ export const partialYearRegex = new RegExp(`^(?:${year.charAt(0)}|$)(?:${year.ch
 export const maxImageCount = 10
 export const maxImageSize = 1024 * 1024 // 1 MB
 
+export const unlockSubjectDuration = 30 * 24 * 60 * 60 * 1000 // 30 days
 export const banDuration = `${24 * 365}h` // 1 year
