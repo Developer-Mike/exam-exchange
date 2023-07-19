@@ -25,10 +25,12 @@ export default function Navbar() {
       dropdown && dropdown.classList.remove(styles.expanded)
     }
 
-    supabaseClient.from("students").select("credits").eq("id", user?.id).single().then(response => {
-      if (response.error) return
-      setCredits(response.data?.credits)
-    })
+    if (user) {
+      supabaseClient.from("students").select("credits").eq("id", user?.id).single().then(response => {
+        if (response.error) return
+        setCredits(response.data?.credits)
+      })
+    }
   })
 
   return (
