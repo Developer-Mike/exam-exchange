@@ -23,7 +23,7 @@ export default function Logout({ username, upcomingExams, uploadedExams }: {
   useEffect(() => { (async () => {
     let uploadedExamImages: {[key: string]: string} = {}
 
-    for (let exam of uploadedExams) {
+    await Promise.all(uploadedExams.map(async (exam) => {
       const { data: examImage, error } = await supabaseClient.storage
         .from("exam-images")
         .download(exam.imagePath)
@@ -31,7 +31,7 @@ export default function Logout({ username, upcomingExams, uploadedExams }: {
       if (error) return
 
       uploadedExamImages[exam.id] = URL.createObjectURL(examImage)
-    }
+    }))
 
     setUploadedExamImages(uploadedExamImages)
   })() }, [])
