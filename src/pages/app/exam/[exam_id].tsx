@@ -20,16 +20,13 @@ export default function Exam({ topic, subject, teacher, class: class_, issueYear
   const [examImages, setExamImages] = useState<string[]>([])
 
   useEffect(() => { (async () => {
-    let examImages: string[] = []
-
-    await Promise.all(imagePaths.map(async (imagePath) => {
+    let examImages = await Promise.all(imagePaths.map(async (imagePath) => {
       const { data: image, error } = await supabaseClient.storage
         .from("exam-images")
         .download(imagePath)
 
-      if (error) return
-
-      examImages.push(URL.createObjectURL(image))
+      if (error) return ""
+      return URL.createObjectURL(image)
     }))
 
     setExamImages(examImages)
