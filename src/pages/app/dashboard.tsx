@@ -4,13 +4,12 @@ import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import useTranslation from 'next-translate/useTranslation'
 import { getFirstName } from '@/utils/user-helper'
 import { useEffect, useState } from 'react'
-import { unlockSubjectDuration } from '@/config'
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { GetServerSidePropsContext } from 'next'
 
-export default function Logout({ username, upcomingExams, uploadedExams }: {
+export default function Logout({ username, unlockedSubjects, uploadedExams }: {
   username: string,
-  upcomingExams: any[],
+  unlockedSubjects: any[],
   uploadedExams: any[],
 }) {
   const { t } = useTranslation('dashboard')
@@ -40,15 +39,15 @@ export default function Logout({ username, upcomingExams, uploadedExams }: {
     <main id={styles.main}>
       <h1>{`${t("hello")} ${username}`}</h1>
 
-      <h2 className={styles.sectionTitle}>{t("upcoming_exams")}</h2>
-      <div className={styles.upcomingExamsContainer}>
-        <div className={styles.addUpcomingExam} onClick={() => { router.push("/app/upcoming-exam") }}>
+      <h2 className={styles.sectionTitle}>{t("unlocked_subjects")}</h2>
+      <div className={styles.unlockedSubjectsContainer}>
+        <div className={styles.unlockNewSubject} onClick={() => { router.push("/app/unlock-subject") }}>
           <span className="material-symbols-outlined">add</span>
-          <h2>{t("add_upcoming_exam")}</h2>
+          <h2>{t("unlock_new_subject")}</h2>
         </div>
 
-        { upcomingExams?.map((exam) => (
-          <div key={exam.id} className={styles.upcomingExam}>
+        { unlockedSubjects?.map((exam) => (
+          <div key={exam.id} className={styles.unlockedSubject}>
             <h2>{exam.subject_name}</h2>
             <p>{t("access_expiring_in").replace("{days}", exam.expires_in)}</p>
             <button onClick={() => { router.push(`/app/browse/${exam.subject_id}?topic=${exam.topic}&class=${exam.class}&teacher=${exam.teacher_id}`) }}>{t("browse_exams")}</button>
@@ -88,17 +87,17 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
   const username = getFirstName(getFirstName(user.email!))
 
-  var upcomingExams: any[] = []
-  let upcomingExamsRequest = (async () => {
+  var unlockedSubjects: any[] = []
+  let unlockedSubjectsRequest = (async () => {
     const { data, error } = await supabase
-      .from("upcoming_exams")
+      .from("unlocked_subjects")
       .select("*")
       .eq("student_id", user?.id)
 
     if (error) return
-    upcomingExams = data
+    unlockedSubjects = data
 
-    for (let exam of upcomingExams) {
+    for (let exam of unlockedSubjects) {
       const { data: subject, error: subjectError } = await supabase
         .from("subjects")
         .select("subject_name")
@@ -107,8 +106,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
       if (!subjectError) exam.subject_name = subject.subject_name
 
-      let expireTimestamp = new Date(exam.register_date).getTime() + unlockSubjectDuration
-      exam.expires_in = Math.ceil((expireTimestamp - Date.now()) / (1000 * 60 * 60 * 24))
+      exam.expires_in = Math.ceil((new Date(exam.expiry_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     }
   })() 
 
@@ -127,12 +125,12 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     }
   })()
 
-  await Promise.all([upcomingExamsRequest, uploadedExamsRequest])
+  await Promise.all([unlockedSubjectsRequest, uploadedExamsRequest])
 
   return {
     props: {
       username: username,
-      upcomingExams: upcomingExams,
+      unlockedSubjects: unlockedSubjects,
       uploadedExams: uploadedExams
     }
   }

@@ -95,11 +95,11 @@
   }
 }
 
-.upcomingExamsContainer {
+.unlockedSubjectsContainer {
   display: flex;
   flex-direction: column;
 
-  .addUpcomingExam, .upcomingExam {
+  .unlockNewSubject, .unlockedSubject {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -110,7 +110,7 @@
     border-radius: 8px;
   }
 
-  .addUpcomingExam {
+  .unlockNewSubject {
     border: 2px dashed rgba($on-surface-color, 0.5);
     cursor: pointer;
 
@@ -120,7 +120,7 @@
     }
   }
 
-  .upcomingExam {
+  .unlockedSubject {
     box-shadow: rgba($on-surface-color, 0.2) 0px 0.125em 0.5em;
 
     h2 {

@@ -44,6 +44,8 @@ CREATE TRIGGER on_auth_user_created
     ON auth.users
     FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
 CREATE TABLE public.teachers (
     id SERIAL PRIMARY KEY,
     validated BOOLEAN DEFAULT false NOT NULL,
@@ -66,6 +68,8 @@ WITH CHECK (
     validated = false 
 );
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
 CREATE TABLE public.subjects (
     id SERIAL PRIMARY KEY,
     validated BOOLEAN DEFAULT false NOT NULL,
@@ -86,58 +90,76 @@ WITH CHECK (
     validated = false 
 );
 
-CREATE TABLE public.upcoming_exams (
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE public.unlocked_subjects (
     id SERIAL PRIMARY KEY,
     student_id UUID REFERENCES students(id) NOT NULL,
-    register_date TIMESTAMPTZ NOT NULL default now(),
-    subject_id SERIAL REFERENCES subjects(id),
-    teacher_id SERIAL REFERENCES teachers(id),
-    class VARCHAR(3) NOT NULL,
-    topic TEXT NOT NULL
+    expiry_date TIMESTAMPTZ NOT NULL default now(), -- Will be set to 30 days from now when registering
+    subject_id SERIAL REFERENCES subjects(id)
 );
-ALTER TABLE public.upcoming_exams ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.unlocked_subjects ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow delete for themselves"
-ON public.upcoming_exams
+ON public.unlocked_subjects
 FOR DELETE 
 USING (
     auth.uid() = student_id
 );
 
 CREATE POLICY "Allow read for themselves" 
-ON public.upcoming_exams
+ON public.unlocked_subjects
 FOR SELECT
 USING (
     auth.uid() = student_id
 );
 
 CREATE POLICY "Allow insert for themselves"
-ON public.upcoming_exams
+ON public.unlocked_subjects
 FOR INSERT 
 WITH CHECK (
     auth.uid() = student_id
 );
 
--- Create trigger for subtracting credits when registering an upcoming exam
-CREATE FUNCTION public.handle_upcoming_exam_register()
+-- Create trigger for subtracting credits when registering an unlocked subject
+CREATE FUNCTION public.handle_unlocked_subject_register()
     RETURNS trigger
     LANGUAGE PLPGSQL
     SECURITY DEFINER SET SEARCH_PATH = public
 AS $$
 BEGIN
+    -- Check if student has enough credits
+    IF (
+        SELECT credits FROM public.students WHERE id = NEW.student_id
+    ) <= 0 THEN
+        RAISE EXCEPTION 'Not enough credits';
+    END IF;
+
+    -- Check if student already has unlocked subject
+    IF (
+        SELECT COUNT(*) FROM public.unlocked_subjects WHERE student_id = NEW.student_id AND subject_id = NEW.subject_id
+    ) > 0 THEN
+        RAISE EXCEPTION 'Already unlocked subject';
+    END IF;
+
     -- Subtract one credit
     UPDATE public.students
     SET credits = credits - 1
     WHERE id = NEW.student_id;
 
+    -- Set register date to 30 days from now
+    NEW.expiry_date = now() + '30 days';
+
     RETURN NEW;
 END;
 $$;
 
-CREATE TRIGGER on_upcoming_exam_inserted
-    AFTER INSERT
-    ON public.upcoming_exams
-    FOR EACH ROW EXECUTE PROCEDURE public.handle_upcoming_exam_register();
+CREATE TRIGGER on_unlocked_subject_inserted
+    BEFORE INSERT
+    ON public.unlocked_subjects
+    FOR EACH ROW EXECUTE PROCEDURE public.handle_unlocked_subject_register();
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 CREATE TABLE public.uploaded_exams (
     id SERIAL PRIMARY KEY,
@@ -152,11 +174,11 @@ CREATE TABLE public.uploaded_exams (
 );
 ALTER TABLE public.uploaded_exams ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Allow insert for everyone"
+CREATE POLICY "Allow upload exam for themselves"
 ON public.uploaded_exams
-FOR INSERT
+FOR INSERT 
 WITH CHECK (
-    true
+    auth.uid() = student_id
 );
 
 CREATE POLICY "Allow read for self" 
@@ -166,18 +188,22 @@ USING (
     auth.uid() = student_id
 );
 
+CREATE POLICY "Allow read for those with unlocked subject" 
+ON public.uploaded_exams
+FOR SELECT
+USING (
+    subject_id IN (
+        SELECT subject_id FROM public.unlocked_subjects WHERE student_id = auth.uid() AND expiry_date > now()
+    )
+);
+
 -- Create trigger for validating uploaded exams
 CREATE FUNCTION public.handle_uploaded_exam()
     RETURNS trigger
     LANGUAGE PLPGSQL
 AS $$
 BEGIN
-    IF NEW.student_id <> auth.uid() THEN
-        RAISE EXCEPTION 'Student ID must match authenticated user ID';        
-    END IF;
-
     NEW.validated = false;
-
     RETURN NEW;
 END;
 $$;
@@ -211,6 +237,8 @@ CREATE TRIGGER on_uploaded_exams_updated
     BEFORE UPDATE
     ON public.uploaded_exams
     FOR EACH ROW EXECUTE PROCEDURE public.handle_uploaded_exam_validated();
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- Create bucket for exam images
 INSERT INTO storage.buckets 

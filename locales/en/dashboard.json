@@ -5,8 +5,8 @@
     "loading": "Loading...",
     "validated": "Verified",
     "not_validated": "Under verification",
-    "upcoming_exams": "Upcoming Exams",
-    "add_upcoming_exam": "Add Upcoming Exam",
+    "unlocked_subjects": "Unlocked Subjects",
+    "unlock_new_subject": "Unlock New Subject",
     "access_expiring_in": "Access expiring in {days} days.",
     "browse_exams": "Browse Exams"
 }
