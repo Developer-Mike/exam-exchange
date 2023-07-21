@@ -124,12 +124,14 @@
     box-shadow: rgba($on-surface-color, 0.2) 0px 0.125em 0.5em;
 
     h2 {
+      flex: 1;
+
       margin: 0;
       margin-right: 10px;
     }
 
     p {
-      margin: 0 auto;
+      flex: 1;
     }
 
     button {

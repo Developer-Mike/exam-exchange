@@ -262,6 +262,21 @@ TO public
 USING (
     bucket_id = 'exam-images' AND auth.uid()::text = (storage.foldername(name))[1]
 );
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Create function for getting the number of exams by subjects (argument is subject_id)
+CREATE FUNCTION public.get_number_of_exams(requested_subject_id INTEGER)
+    RETURNS INTEGER
+    LANGUAGE PLPGSQL
+    SECURITY DEFINER SET SEARCH_PATH = public
+AS $$
+BEGIN
+    RETURN (
+        SELECT COUNT(*) FROM public.uploaded_exams WHERE subject_id = requested_subject_id
+    );
+END;
+$$;
 ```
 
 ## Deploy with Vercel

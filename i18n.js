@@ -8,6 +8,7 @@ module.exports = {
     '/app/dashboard': ['dashboard'],
     '/app/upload': ['upload'],
     '/app/upload-success': ['upload-success'],
+    '/app/unlock-subject': ['unlock-subject'],
     '/app/exam/[exam_id]': ['exam'],
     '/admin/validate': ['validate'],
   }

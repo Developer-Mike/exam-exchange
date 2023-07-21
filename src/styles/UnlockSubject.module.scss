@@ -1,0 +1,57 @@
+#main {
+  margin: 5vw 10vw;
+}
+
+#subjectSelection {
+  width: min(500px, 90%);
+  padding: 10px;
+
+  font-size: 1.5rem;
+
+  border: 2px solid rgba($on-surface-color, 0.5);
+  border-radius: 8px;
+}
+
+#amountOfExams {
+  margin: 10px;
+}
+
+.stickyBottom {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+
+  display: inline-flex;
+  align-items: center;
+
+  margin: min(50px, 5vw);
+
+  #unlockButton {
+    display: inline-flex;
+    align-items: center;
+  
+    padding: 10px 15px;
+  
+    border-radius: 8px;
+    box-shadow: rgba($accent-color, 0.6) 0px 0.125em 0.5em;
+  
+    font-size: 2rem;
+    font-weight: 600;
+    color: $on-accent-color;
+    background-color: $accent-color;
+  
+    #creditPrice {
+      display: inline-flex;
+      align-items: center;
+  
+      margin-left: 10px;
+      color: white;
+      
+      img {
+        width: 25px;
+        height: 25px;
+        margin-left: 5px;
+      }
+    }
+  }
+}

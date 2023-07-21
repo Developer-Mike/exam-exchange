@@ -1,0 +1,5 @@
+{
+    "unlock_for_days": "Unlock for {days} days",
+    "exams_found": "{count} exams found.",
+    "error_unlocking_subject": "Error unlocking subject."
+}

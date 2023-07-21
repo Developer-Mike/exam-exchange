@@ -50,7 +50,7 @@ export default function Logout({ username, unlockedSubjects, uploadedExams }: {
           <div key={exam.id} className={styles.unlockedSubject}>
             <h2>{exam.subject_name}</h2>
             <p>{t("access_expiring_in").replace("{days}", exam.expires_in)}</p>
-            <button onClick={() => { router.push(`/app/browse/${exam.subject_id}?topic=${exam.topic}&class=${exam.class}&teacher=${exam.teacher_id}`) }}>{t("browse_exams")}</button>
+            <button onClick={() => { router.push(`/app/browse/${exam.subject_id}`) }}>{t("browse_exams")}</button>
           </div>
         )) }
       </div>
