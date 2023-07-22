@@ -122,7 +122,7 @@ WITH CHECK (
 );
 
 -- Create trigger for subtracting credits when registering an unlocked subject
-CREATE FUNCTION public.handle_unlocked_subject_register()
+CREATE FUNCTION public.handle_unlocked_subject()
     RETURNS trigger
     LANGUAGE PLPGSQL
     SECURITY DEFINER SET SEARCH_PATH = public
@@ -138,7 +138,9 @@ BEGIN
     -- Check if student already has unlocked subject
     IF (
         SELECT COUNT(*) FROM public.unlocked_subjects WHERE student_id = NEW.student_id AND subject_id = NEW.subject_id
-    ) > 0 THEN
+    ) > 0 AND (
+        SELECT expiry_date FROM public.unlocked_subjects WHERE student_id = NEW.student_id AND subject_id = NEW.subject_id ORDER BY expiry_date DESC LIMIT 1
+    ) > now() THEN
         RAISE EXCEPTION 'Already unlocked subject';
     END IF;
 
@@ -157,7 +159,7 @@ $$;
 CREATE TRIGGER on_unlocked_subject_inserted
     BEFORE INSERT
     ON public.unlocked_subjects
-    FOR EACH ROW EXECUTE PROCEDURE public.handle_unlocked_subject_register();
+    FOR EACH ROW EXECUTE PROCEDURE public.handle_unlocked_subject();
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -277,6 +279,17 @@ BEGIN
     );
 END;
 $$;
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+CREATE extension IF NOT EXISTS pg_cron;
+
+-- Create cron job for deleting expired unlocked subjects
+SELECT cron.schedule('0 0 * * *', 
+    $$
+        DELETE FROM public.unlocked_subjects WHERE expiry_date < now()
+    $$
+);
 ```
 
 ## Deploy with Vercel

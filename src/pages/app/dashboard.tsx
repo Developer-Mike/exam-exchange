@@ -93,6 +93,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       .from("unlocked_subjects")
       .select("*")
       .eq("student_id", user?.id)
+      .gt("expiry_date", new Date().toISOString())
 
     if (error) return
     unlockedSubjects = data

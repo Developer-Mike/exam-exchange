@@ -6,7 +6,7 @@ import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { GetServerSidePropsContext } from 'next'
 import useTranslation from 'next-translate/useTranslation'
 import { useRouter } from "next/router"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 export default function UnlockSubject({ notUnlockedSubjects }: {
   notUnlockedSubjects: any[]
@@ -43,9 +43,14 @@ export default function UnlockSubject({ notUnlockedSubjects }: {
       }])
       .select()
 
+    console.log(error)
     if (!error) router.push('/app/dashboard')
     else makeSnackbar(t("error_unlocking_subject"), "error")
   }
+
+  useEffect(() => {
+    updateAmountOfExams()
+  }, [notUnlockedSubjects])
   
   return <>
     <main id={styles.main}>
@@ -84,6 +89,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     .from("unlocked_subjects")
     .select("subject_id")
     .eq("student_id", user?.id)
+    .gt("expiry_date", new Date().toISOString())
 
   const notUnlockedSubjects = subjects?.filter(subject => (
     !unlockedSubjects?.some(unlockedSubject => unlockedSubject.subject_id === subject.id)
