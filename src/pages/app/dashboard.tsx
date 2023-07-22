@@ -17,7 +17,7 @@ export default function Logout({ username, unlockedSubjects, uploadedExams }: {
   const router = useRouter()
   const supabaseClient = useSupabaseClient()
 
-  const [uploadedExamImages, setUploadedExamImages] = useState<{[key: string]: string}|null>(null)
+  const [uploadedExamImages, setUploadedExamImages] = useState<{[key: string]: string}>({})
 
   useEffect(() => { (async () => {
     let uploadedExamImages: {[key: string]: string} = {}
@@ -25,7 +25,7 @@ export default function Logout({ username, unlockedSubjects, uploadedExams }: {
     await Promise.all(uploadedExams.map(async (exam) => {
       const { data: examImage, error } = await supabaseClient.storage
         .from("exam-images")
-        .download(exam.imagePath)
+        .download(exam.previewImagePath)
 
       if (error) return
 
@@ -46,11 +46,11 @@ export default function Logout({ username, unlockedSubjects, uploadedExams }: {
           <h2>{t("unlock_new_subject")}</h2>
         </div>
 
-        { unlockedSubjects?.map((exam) => (
-          <div key={exam.id} className={styles.unlockedSubject}>
-            <h2>{exam.subject_name}</h2>
-            <p>{t("access_expiring_in").replace("{days}", exam.expires_in)}</p>
-            <button onClick={() => { router.push(`/app/browse/${exam.subject_id}`) }}>{t("browse_exams")}</button>
+        { unlockedSubjects?.map((unlockedSubject) => (
+          <div key={unlockedSubject.id} className={styles.unlockedSubject}>
+            <h2>{unlockedSubject.subject_id.subject_name}</h2>
+            <p>{t("access_expiring_in").replace("{days}", unlockedSubject.expires_in)}</p>
+            <button onClick={() => { router.push(`/app/browse/${unlockedSubject.subject_id.id}`) }}>{t("browse_exams")}</button>
           </div>
         )) }
       </div>
@@ -62,11 +62,10 @@ export default function Logout({ username, unlockedSubjects, uploadedExams }: {
           <h2>{t("upload_exam")}</h2>
         </div>
 
-        { !uploadedExams && <h2 className={styles.loading}>{t("loading")}</h2> }
-        { uploadedExams?.map((exam) => (
+        { uploadedExams.map((exam) => (
           <div key={exam.id} className={styles.uploadedExam} onClick={() => { router.push(`/app/exam/${exam.id}`)}}>
             <div className={styles.examPreview}>
-              <img src={uploadedExamImages && uploadedExamImages[exam.id] || "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="} alt={exam.topic} />
+              <img src={uploadedExamImages[exam.id] || "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="} alt={exam.topic} />
               <div className={styles.examPreviewOverlay} />
             </div>
 
@@ -91,7 +90,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   let unlockedSubjectsRequest = (async () => {
     const { data, error } = await supabase
       .from("unlocked_subjects")
-      .select("*")
+      .select("id, subject_id (id, subject_name), expiry_date")
       .eq("student_id", user?.id)
       .gt("expiry_date", new Date().toISOString())
 
@@ -101,16 +100,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     for (let exam of unlockedSubjects) {
       exam.expires_in = Math.ceil((new Date(exam.expiry_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     }
-
-    await Promise.all(unlockedSubjects.map(async (exam) => {
-      const { data: subject, error: subjectError } = await supabase
-        .from("subjects")
-        .select("subject_name")
-        .eq("id", exam.subject_id)
-        .single()
-
-      if (!subjectError) exam.subject_name = subject.subject_name
-    }))
   })() 
 
   var uploadedExams: any[] = []
@@ -124,7 +113,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     uploadedExams = data
 
     for (let exam of uploadedExams) {
-      exam.imagePath = `${user?.id}/${exam.id}/0.webp`
+      exam.previewImagePath = `${user?.id}/${exam.id}/0.webp`
     }
   })()
 

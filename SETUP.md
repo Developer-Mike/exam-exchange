@@ -165,12 +165,12 @@ CREATE TRIGGER on_unlocked_subject_inserted
 
 CREATE TABLE public.uploaded_exams (
     id SERIAL PRIMARY KEY,
-    student_id UUID REFERENCES students(id),
+    student_id UUID REFERENCES students(id) NOT NULL,
     validated BOOLEAN NOT NULL default false,
     upload_date TIMESTAMPTZ NOT NULL default now(),
     topic TEXT NOT NULL,
     class VARCHAR(3) NOT NULL,
-    issue_year NUMERIC(4, 0),
+    issue_year NUMERIC(4, 0) NOT NULL,
     subject_id SERIAL REFERENCES subjects(id),
     teacher_id SERIAL REFERENCES teachers(id)
 );

@@ -10,6 +10,7 @@ module.exports = {
     '/app/upload-success': ['upload-success'],
     '/app/unlock-subject': ['unlock-subject'],
     '/app/exam/[exam_id]': ['exam'],
+    '/app/browse/[subject_id]': ['browse'],
     '/admin/validate': ['validate'],
   }
 }
