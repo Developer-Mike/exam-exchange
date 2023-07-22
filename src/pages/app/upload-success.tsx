@@ -1,5 +1,6 @@
 import styles from '@/styles/UploadSuccess.module.scss'
 import useTranslation from 'next-translate/useTranslation'
+import Link from 'next/link'
 
 export default function UploadSuccess() {
   const { t } = useTranslation('upload-success')
@@ -11,8 +12,8 @@ export default function UploadSuccess() {
         <p className={styles.uploadInfo}>{t("waitForVerification")}</p>
 
         <div id={styles.options}>
-          <a href="/app/dashboard"><button id={styles.goToDashboard}>{t("goToDashboard")}</button></a>
-          <a href="/app/upload"><button id={styles.uploadAnother}>{t("uploadAnother")}</button></a>
+          <Link href="/app/dashboard"><button id={styles.goToDashboard}>{t("goToDashboard")}</button></Link>
+          <Link href="/app/upload"><button id={styles.uploadAnother}>{t("uploadAnother")}</button></Link>
         </div>
       </main>
     </>

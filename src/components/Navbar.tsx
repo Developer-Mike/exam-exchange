@@ -3,6 +3,7 @@ import { schoolName } from "@/config"
 import { useEffect, useState } from "react"
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { getFirstName } from '@/utils/user-helper'
+import Link from 'next/link'
 
 export default function Navbar() {
   const supabaseClient = useSupabaseClient()
@@ -44,8 +45,8 @@ export default function Navbar() {
 
       <div id={styles.collapsible}>
         <div id={styles.links}>
-          <a href="/">Home</a>
-          <a href="/app/dashboard">Dashboard</a>
+          <Link href="/">Home</Link>
+          <Link href="/app/dashboard">Dashboard</Link>
         </div>
 
         <div id={styles.account}>
@@ -67,7 +68,7 @@ export default function Navbar() {
             </div>
           ) : (
             <div id={styles.login}>
-              <a href="/login"><button>Login</button></a>
+              <Link href="/login"><button>Login</button></Link>
             </div>
           ) }
         </div>
@@ -82,9 +83,11 @@ function DropdownElement({ href, text, icon }: {
   icon: string
 }) {
   return (
-    <a className={styles.dropdownItem} href={href}>
-      {text}
-      <span className={`${styles.icon} material-symbols-outlined`}>{icon}</span>
-    </a>
+    <Link href={href}>
+      <div className={styles.dropdownItem} >
+        {text}
+        <span className={`${styles.icon} material-symbols-outlined`}>{icon}</span>
+      </div>
+    </Link>
   )
 }
