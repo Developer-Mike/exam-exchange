@@ -43,7 +43,6 @@ export default function UnlockSubject({ notUnlockedSubjects }: {
       }])
       .select()
 
-    console.log(error)
     if (!error) router.push('/app/dashboard')
     else makeSnackbar(t("error_unlocking_subject"), "error")
   }

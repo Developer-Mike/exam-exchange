@@ -99,6 +99,10 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     unlockedSubjects = data
 
     for (let exam of unlockedSubjects) {
+      exam.expires_in = Math.ceil((new Date(exam.expiry_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    }
+
+    await Promise.all(unlockedSubjects.map(async (exam) => {
       const { data: subject, error: subjectError } = await supabase
         .from("subjects")
         .select("subject_name")
@@ -106,9 +110,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
         .single()
 
       if (!subjectError) exam.subject_name = subject.subject_name
-
-      exam.expires_in = Math.ceil((new Date(exam.expiry_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-    }
+    }))
   })() 
 
   var uploadedExams: any[] = []

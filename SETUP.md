@@ -285,10 +285,10 @@ $$;
 CREATE extension IF NOT EXISTS pg_cron;
 
 -- Create cron job for deleting expired unlocked subjects
-SELECT cron.schedule('0 0 * * *', 
-    $$
-        DELETE FROM public.unlocked_subjects WHERE expiry_date < now()
-    $$
+SELECT cron.schedule(
+    'delete_expired_unlocked_subjects',
+    '0 0 * * *', 
+    $$DELETE FROM public.unlocked_subjects WHERE expiry_date < now()$$
 );
 ```
 
