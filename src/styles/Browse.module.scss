@@ -2,6 +2,35 @@
   margin: 5vw 10vw;
 }
 
+#searchBar {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 50px;
+
+  & > * {
+    margin: 0 5px;
+    font-size: 1.5rem;
+  }
+
+  #topicInput {
+    flex: 10;
+  }
+
+  #classInput {
+    flex: 1;
+  }
+
+  #searchButton {
+    flex: 1;
+
+    font-size: 1.25rem;
+    font-weight: 600;
+
+    border-radius: 8px;
+    box-shadow: rgba($accent-color, 0.5) 0px 0.125em 0.5em;
+  }
+}
+
 .examsContainer {
   display: grid;
   grid-template-columns: repeat(auto-fill, 275px);
@@ -70,6 +99,48 @@
     p {
       margin: 0;
       font-size: 1.2rem;
+    }
+  }
+}
+
+#noExams {
+  width: 100%;
+  margin-top: 100px;
+
+  font-size: 2rem;
+  text-align: center;
+}
+
+#pageButtons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin-top: 20px;
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    aspect-ratio: 1/1;
+    width: 1.75rem;
+    margin: 0 5px;
+    padding-top: 2px;
+
+    background-color: $surface-color;
+    color: $on-surface-color;
+    font-size: 1rem;
+    text-decoration: none;
+    user-select: none;
+
+    border-radius: 8px;
+    box-shadow: rgba($on-surface-color, 0.2) 0px 0.125em 0.5em;
+
+    &#currentPage {
+      background-color: $accent-color;
+      color: $on-accent-color;
+      box-shadow: rgba($accent-color, 0.5) 0px 0.125em 0.5em;
     }
   }
 }

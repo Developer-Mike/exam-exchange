@@ -1,4 +1,10 @@
 {
     "browse": "Browse Exams",
-    "page": "Page {current} of {total}"
+    "topic": "Topic",
+    "class": "Class",
+    "search": "Search",
+    "page": "Page {current} of {total}",
+    "no_exams": "No exams found.",
+    "previous_page": "Previous Page",
+    "next_page": "Next Page"
 }
