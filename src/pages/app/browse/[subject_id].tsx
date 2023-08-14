@@ -105,7 +105,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   
   const examQuery = supabase
     .from("uploaded_exams")
-    .select("id, upload_date, topic, class, issue_year, teacher_id (abbreviation, first_name, last_name)")
+    .select("id, student_id, upload_date, topic, class, issue_year, teacher_id (abbreviation, first_name, last_name)")
     .eq("subject_id", subjectId)
     .eq("validated", true)
     .order("issue_year", { ascending: false })
@@ -118,7 +118,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   exams ??= []
   
   for (let exam of exams) {
-    exam.previewImagePath = `${user?.id}/${exam.id}/0.webp`
+    exam.previewImagePath = `${exam.student_id}/${exam.id}/0.webp`
   }
 
   return {

@@ -265,6 +265,18 @@ USING (
     bucket_id = 'exam-images' AND auth.uid()::text = (storage.foldername(name))[1]
 );
 
+CREATE POLICY "Allow image reading for those with unlocked subject" 
+ON storage.objects
+FOR SELECT
+TO public
+USING (
+    bucket_id = 'exam-images' AND 
+    (storage.foldername(name))[2]::INT4 IN (
+        SELECT id FROM public.uploaded_exams -- Check if the subject_id of the appropriate exam is in the unlocked_subjects table with the requested users uid
+        WHERE subject_id in (SELECT subject_id FROM public.unlocked_subjects WHERE student_id = auth.uid())
+    )
+);
+
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- Create function for getting the number of exams by subjects (argument is subject_id)

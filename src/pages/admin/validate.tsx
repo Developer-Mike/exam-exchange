@@ -208,7 +208,7 @@ export default function Validate({ serviceKey, unverifiedExams, subjects, teache
   </>
 }
 
-export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+export async function getServerSideProps() {
   const serviceKey = process.env.SUPABASE_SERVICE_KEY as string
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL as string,
