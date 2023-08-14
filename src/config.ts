@@ -1,7 +1,7 @@
 export const adminEmails = [/^m[a-z]+\.s[a-z]+@gmail\.com$/]
 
 export const schoolName = "Random School"
-export const mailRegex = /^[a-z]+\.[a-z]+@gmail\.com$/
+export const mailRegex = /^[a-z]+\.[a-z]+@[a-z]+\.com$/
 
 export const nameRegex = /^[A-ZÖÄÜ][a-zöäü]+$/
 export const partialNameRegex = /^(?:[A-ZÖÄÜ]|$)[a-zöäü]*$/

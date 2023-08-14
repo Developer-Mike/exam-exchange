@@ -55,7 +55,7 @@ export default function Login() {
             </>
           ) : (
             <>
-              <input id={styles.email} type="text" placeholder={t("email")} />
+              <input id={styles.email} type="text" placeholder={t("email")} onKeyUp={(e) => { if (e.key == "Enter") document.getElementById(styles.submit)?.click() }} />
               { isInvalidEmail && <span className={styles.error}>{t("invalidEmail")}</span> }
               <button id={styles.submit} onClick={login}>{t("sendEmail")}</button>
             </>

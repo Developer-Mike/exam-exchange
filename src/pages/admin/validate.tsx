@@ -210,8 +210,10 @@ export default function Validate({ serviceKey, unverifiedExams, subjects, teache
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const serviceKey = process.env.SUPABASE_SERVICE_KEY as string
-  
-  const supabase = createServerSupabaseClient(ctx)
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+    serviceKey
+  )
 
   const { data: unverifiedExams, error: examsError } = await supabase
     .from("uploaded_exams")
