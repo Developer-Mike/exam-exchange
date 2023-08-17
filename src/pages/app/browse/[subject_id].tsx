@@ -86,7 +86,6 @@ export default function Browse({ exams, currentPage, totalPages }: {
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const supabase = createServerSupabaseClient(ctx)
-  const { data: { user } } = await supabase.auth.getUser()
 
   const subjectId = ctx.params?.subject_id as string
   var page = +(ctx.query.page ?? "1")

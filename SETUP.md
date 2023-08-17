@@ -304,11 +304,15 @@ SELECT cron.schedule(
 );
 ```
 
-## Deploy with Vercel
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FDeveloper-Mike%2Fexam-exchange&project-name=exam-exchange&repository-name=exam-exchange)
-
 ## Fill out the configs
 1. Go to the newly created github repository
 2. Fill out the `config.ts` in the `src` folder
 3. Rename the `template.env.local` file to `.env.local`
 4. Fill out the `.env.local` file using the values from the Supabase project overview
+
+## Customize it
+- It's recommended to replace the `public/school-icon.svg` with your schools logo
+- If you need to translate the page, take a look at [next-translate](https://github.com/aralroca/next-translate)
+
+## Deploy with Vercel
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FDeveloper-Mike%2Fexam-exchange&project-name=exam-exchange&repository-name=exam-exchange)
