@@ -1,0 +1,12 @@
+{
+    "hello": "Hallo",
+    "uploaded_exams": "Hochgeladene Prüfungen",
+    "upload_exam": "Neue Prüfung hochladen",
+    "loading": "Lädt...",
+    "validated": "Verifiziert",
+    "not_validated": "Wird verifiziert",
+    "unlocked_subjects": "Freigeschaltete Fächer",
+    "unlock_new_subject": "Neues Fach freischalten",
+    "access_expiring_in": "Zugang läuft in {days} Tagen ab.",
+    "browse_exams": "Prüfungen durchstöbern"
+}

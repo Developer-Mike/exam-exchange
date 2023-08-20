@@ -1,0 +1,10 @@
+{
+    "browse": "Prüfungen durchstöbern",
+    "topic": "Prüfungsthema",
+    "class": "Klasse",
+    "search": "Suchen",
+    "page": "Seite {current} von {total}",
+    "no_exams": "Keine Prüfungen gefunden.",
+    "previous_page": "Vorherige Seite",
+    "next_page": "Nächste Seite"
+}

@@ -1,0 +1,5 @@
+{
+    "unlock_for_days": "Für {days} Tage freischalten",
+    "exams_found": "{count} Prüfungen gefunden.",
+    "error_unlocking_subject": "Fehler beim Freischalten des Fachs."
+}
