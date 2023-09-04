@@ -8,12 +8,12 @@ export default function UploadSuccess() {
   return (
     <>
       <main id={styles.main}>
-        <h1 className={styles.successTitle}>{t("uploadSuccess")}</h1>
-        <p className={styles.uploadInfo}>{t("waitForVerification")}</p>
+        <h1 className={styles.successTitle}>{t("upload_success")}</h1>
+        <p className={styles.uploadInfo}>{t("wait_for_verification")}</p>
 
         <div id={styles.options}>
-          <Link href="/app/dashboard"><button id={styles.goToDashboard}>{t("goToDashboard")}</button></Link>
-          <Link href="/app/upload"><button id={styles.uploadAnother}>{t("uploadAnother")}</button></Link>
+          <Link href="/app/dashboard"><button id={styles.goToDashboard}>{t("go_to_dashboard")}</button></Link>
+          <Link href="/app/upload"><button id={styles.uploadAnother}>{t("upload_another")}</button></Link>
         </div>
       </main>
     </>

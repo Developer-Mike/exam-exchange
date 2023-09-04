@@ -1,11 +1,10 @@
-import Head from 'next/head'
 import styles from '@/styles/Index.module.scss'
 import useTranslation from 'next-translate/useTranslation'
 
 export default function Index() {
   const { t } = useTranslation('home')
 
-  var caruselStrings: string[] = new Array(5).fill(null).map((_val, i) => t(`caruselText${i}`))
+  var caruselStrings: string[] = new Array(5).fill(null).map((_val, i) => t(`carusel_text_${i}`))
   caruselStrings.push(caruselStrings[0])
 
   return (

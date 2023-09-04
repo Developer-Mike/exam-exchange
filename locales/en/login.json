@@ -1,8 +1,8 @@
 {
     "login": "Login",
     "email": "name.lastname@gmail.com",
-    "invalidEmail": "Invalid email (Make sure this is your school email)",
-    "sendEmail": "Send email",
-    "emailSent": "Email sent! Check your inbox and click the link to login.",
-    "changeEmail": "Change email"
+    "invalid_email": "Invalid email (Make sure this is your school email)",
+    "send_email": "Send email",
+    "email_sent": "Email sent! Check your inbox and click the link to login.",
+    "change_email": "Change email"
 }

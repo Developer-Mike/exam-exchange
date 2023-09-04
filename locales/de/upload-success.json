@@ -1,6 +1,6 @@
 {
-    "uploadSuccess": "hochladen erfolgreich",
-    "waitForVerification": "Deine Prüfung wird überprüft. Dies kann einige Tage dauern.",
-    "goToDashboard": "Zum Dashboard",
-    "uploadAnother": "Weitere Prüfung hochladen"
+    "upload_success": "hochladen erfolgreich",
+    "wait_for_verification": "Deine Prüfung wird überprüft. Dies kann einige Tage dauern.",
+    "go_to_dashboard": "Zum Dashboard",
+    "upload_another": "Weitere Prüfung hochladen"
 }

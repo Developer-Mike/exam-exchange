@@ -50,14 +50,14 @@ export default function Login() {
 
           { emailSent ? (
             <>
-              <span className={styles.success}>{t("emailSent")}</span>
-              <button id={styles.submit} onClick={() => setEmailSent(false)}>{t("changeEmail")}</button>
+              <span className={styles.success}>{t("email_sent")}</span>
+              <button id={styles.submit} onClick={() => setEmailSent(false)}>{t("change_email")}</button>
             </>
           ) : (
             <>
               <input id={styles.email} type="text" placeholder={t("email")} onKeyUp={(e) => { if (e.key == "Enter") document.getElementById(styles.submit)?.click() }} />
-              { isInvalidEmail && <span className={styles.error}>{t("invalidEmail")}</span> }
-              <button id={styles.submit} onClick={login}>{t("sendEmail")}</button>
+              { isInvalidEmail && <span className={styles.error}>{t("invalid_email")}</span> }
+              <button id={styles.submit} onClick={login}>{t("send_email")}</button>
             </>
           ) }
         </div>

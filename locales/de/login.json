@@ -1,8 +1,8 @@
 {
     "login": "Login",
     "email": "vorname.nachname@gmail.com",
-    "invalidEmail": "Ungültige E-Mail-Adresse (Stelle sicher, dass du die Schulische E-Mail-Adresse verwendest)",
-    "sendEmail": "E-Mail senden",
-    "emailSent": "E-Mail gesendet! Überprüfe dein Postfach und klicke auf den Link um dich einzuloggen.",
-    "changeEmail": "E-Mail ändern"
+    "invalid_email": "Ungültige E-Mail-Adresse (Stelle sicher, dass du die Schulische E-Mail-Adresse verwendest)",
+    "send_email": "E-Mail senden",
+    "email_sent": "E-Mail gesendet! Überprüfe dein Postfach und klicke auf den Link um dich einzuloggen.",
+    "change_email": "E-Mail ändern"
 }

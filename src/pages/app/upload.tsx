@@ -56,10 +56,10 @@ export default function Upload({ subjects, teachers }: {
   const uploadFinished = (error: null | "server" | "data_invalid" | "cancel") => {
     switch (error) {
       case "server":
-        makeSnackbar(t("uploadServerError"), "error")
+        makeSnackbar(t("upload_server_error"), "error")
         break
       case "data_invalid":
-        makeSnackbar(t("uploadDataIncomplete"), "error")
+        makeSnackbar(t("upload_data_incomplete"), "error")
         break
       case "cancel":
         break
@@ -235,12 +235,12 @@ export default function Upload({ subjects, teachers }: {
               <div className={styles.uploadPageVariant}>
                 <input id="upload-image" name="upload-image" type="file" accept="image/*" multiple={true} onChange={fileUploaded}/>
                 <span className="material-symbols-outlined" onClick={e => document.getElementById("upload-image")?.click()}>upload</span>
-                <label htmlFor="upload-image">{t("uploadImage")}</label>
+                <label htmlFor="upload-image">{t("upload_image")}</label>
               </div>
               <div className={styles.uploadPageVariant}>
                 <input id="take-photo" name="take-photo" type="file" accept="image/*" capture="environment" onChange={fileUploaded}/>
                 <span className="material-symbols-outlined" onClick={e => document.getElementById("take-photo")?.click()}>photo_camera</span>
-                <label htmlFor="take-photo">{t("takePhoto")}</label>
+                <label htmlFor="take-photo">{t("take_photo")}</label>
               </div>
             </div>
 
@@ -251,18 +251,18 @@ export default function Upload({ subjects, teachers }: {
           <div id={styles.uploadDetailsContainer}>
             <h1>{t("upload")}</h1>
 
-            <RegexInput id={styles.topic} label={t("topic")} partialRegex={config.partialTopicRegex} regex={config.topicRegex} example={t("topicExample")}/>
-            <RegexInput id={styles.subject} label={t("subject")} partialRegex={config.partialSubjectRegex} regex={config.subjectRegex} example={t("subjectExample")} dropdownSuggestions={subjectSuggestions}/>
-            <RegexInput id={styles.teacher} label={t("teacher")} partialRegex={config.partialTeacherAbbreviationRegex} regex={config.teacherAbbreviationRegex} example={t("teacherExample")} dropdownSuggestions={teacherSuggestions}/>
-            <RegexInput id={styles.class} label={t("class")} partialRegex={config.partialClassRegex} regex={config.classRegex} example={t("classExample")}/>
-            <RegexInput id={styles.issueYear} label={t("yearIssued")} partialRegex={config.partialYearRegex} regex={config.yearRegex} example={new Date().getFullYear().toString()}/>
+            <RegexInput id={styles.topic} label={t("topic")} partialRegex={config.partialTopicRegex} regex={config.topicRegex} example={t("topic_example")}/>
+            <RegexInput id={styles.subject} label={t("subject")} partialRegex={config.partialSubjectRegex} regex={config.subjectRegex} example={t("subject_example")} dropdownSuggestions={subjectSuggestions}/>
+            <RegexInput id={styles.teacher} label={t("teacher")} partialRegex={config.partialTeacherAbbreviationRegex} regex={config.teacherAbbreviationRegex} example={t("teacher_example")} dropdownSuggestions={teacherSuggestions}/>
+            <RegexInput id={styles.class} label={t("class")} partialRegex={config.partialClassRegex} regex={config.classRegex} example={t("class_example")}/>
+            <RegexInput id={styles.issueYear} label={t("year_issued")} partialRegex={config.partialYearRegex} regex={config.yearRegex} example={new Date().getFullYear().toString()}/>
           </div>
         </div>
         <div className={styles.stickyBottom}>
-          <a id={styles.legalAgreement} href="/legal/terms-of-service" target="_blank">{t("legalAgreement")}</a>
+          <a id={styles.legalAgreement} href="/legal/terms-of-service" target="_blank">{t("legal_agreement")}</a>
 
           <button id={styles.uploadButton} onClick={upload}>
-            {t("uploadNow")}
+            {t("upload_now")}
 
             <div id={styles.creditReward}>
               +1
@@ -273,10 +273,10 @@ export default function Upload({ subjects, teachers }: {
 
         { uploading && <div className={styles.uploadingOverlay}>{t("uploading")}</div> }
 
-        <Dialog reference={addNewTeacherDialog} title={t("registerTeacher")} negative={t("cancel")} positive={t("register")}>
-          <RegexInput reference={newTeacherAbbreviationInput} id={"newTeacherAbbreviation"} label={t("registerTeacherAbbreviation")} partialRegex={config.partialTeacherAbbreviationRegex} regex={config.teacherAbbreviationRegex} example={t("teacherExample")} disabled />
-          <RegexInput reference={newTeacherFirstNameInput} id={"newTeacherFirstName"} label={t("registerTeacherFirstName")} partialRegex={config.partialNameRegex} regex={config.nameRegex} example={t("registerTeacherFirstNameExample")}/>
-          <RegexInput reference={newTeacherLastNameInput} id={"newTeacherLastName"} label={t("registerTeacherLastName")} partialRegex={config.partialNameRegex} regex={config.nameRegex} example={t("registerTeacherLastNameExample")} />
+        <Dialog reference={addNewTeacherDialog} title={t("register_teacher")} negative={t("cancel")} positive={t("register")}>
+          <RegexInput reference={newTeacherAbbreviationInput} id={"newTeacherAbbreviation"} label={t("register_teacher_abbreviation")} partialRegex={config.partialTeacherAbbreviationRegex} regex={config.teacherAbbreviationRegex} example={t("teacher_example")} disabled />
+          <RegexInput reference={newTeacherFirstNameInput} id={"newTeacherFirstName"} label={t("register_teacher_first_name")} partialRegex={config.partialNameRegex} regex={config.nameRegex} example={t("register_teacher_first_name_example")}/>
+          <RegexInput reference={newTeacherLastNameInput} id={"newTeacherLastName"} label={t("register_teacher_last_name")} partialRegex={config.partialNameRegex} regex={config.nameRegex} example={t("register_teacher_last_name_example")} />
         </Dialog>
       </main>
     </>

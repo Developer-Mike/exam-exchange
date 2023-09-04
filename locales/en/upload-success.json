@@ -1,6 +1,6 @@
 {
-    "uploadSuccess": "Upload successful!",
-    "waitForVerification": "Your exam is being verified. This can take up to a few days.",
-    "goToDashboard": "Go to dashboard",
-    "uploadAnother": "Upload another exam"
+    "upload_success": "Upload successful!",
+    "wait_for_verification": "Your exam is being verified. This can take up to a few days.",
+    "go_to_dashboard": "Go to dashboard",
+    "upload_another": "Upload another exam"
 }
