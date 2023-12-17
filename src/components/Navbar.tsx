@@ -83,8 +83,8 @@ function DropdownElement({ href, text, icon }: {
   icon: string
 }) {
   return (
-    <Link href={href}>
-      <div className={styles.dropdownItem} >
+    <Link href={href} className={styles.dropdownItem}>
+      <div>
         {text}
         <span className={`${styles.icon} material-symbols-outlined`}>{icon}</span>
       </div>

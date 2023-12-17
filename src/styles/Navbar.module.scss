@@ -128,27 +128,31 @@
         }
 
         .dropdownItem {
-          display: flex;
-          direction: row;
-          align-items: center;
-          justify-content: space-between;
-
           text-decoration: none;
-          color: $on-surface-color;
 
-          margin: 5px;
-          padding: 10px;
-          border-radius: 8px;
-          transition: background-color 0.15s ease-in-out;
+          & > div {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
 
-          &:hover {
-            background-color: $accent-color;
-          }
+            text-decoration: none;
+            color: $on-surface-color;
 
-          .icon {
-            width: 20px;
-            height: 20px;
-            margin-left: 10px;
+            margin: 5px;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background-color 0.15s ease-in-out;
+
+            &:hover {
+              background-color: $accent-color;
+            }
+
+            .icon {
+              width: 20px;
+              height: 20px;
+              margin-left: 10px;
+            }
           }
         }
       }
