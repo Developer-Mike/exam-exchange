@@ -20,6 +20,15 @@ export default function Browse({ exams, currentPage, totalPages }: {
   const [searchTopic, setSearchTopic] = useState<string>(router.query.topic as string)
   const [searchClass, setSearchClass] = useState<string>(router.query.class as string)
   const [examsPreviewImages, setExamsPreviewImages] = useState<{[key: string]: string}>({})
+
+  const getLinkToPage = (page: number): string => {
+    let url = `/app/browse/${router.query.subject_id}`
+    url += `?page=${page}`
+    if (searchTopic) url += `&topic=${encodeURIComponent(searchTopic)}`
+    if (searchClass) url += `&class=${encodeURIComponent(searchClass)}`
+
+    return url
+  }
   
   useEffect(() => { (async () => {
     let tempExamsPreviewImages: {[key: string]: string} = {}
@@ -43,14 +52,7 @@ export default function Browse({ exams, currentPage, totalPages }: {
       <div id={styles.searchBar}>
         <input id={styles.topicInput} value={searchTopic} onChange={(e) => { setSearchTopic(e.target.value) }} onKeyUp={(e) => { if (e.key == "Enter") document.getElementById(styles.searchButton)?.click() }} type="text" placeholder={t("topic")} />
         <input id={styles.classInput} value={searchClass} onChange={(e) => { setSearchClass(e.target.value) }} onKeyUp={(e) => { if (e.key == "Enter") document.getElementById(styles.searchButton)?.click() }} type="text" placeholder={t("class")} />
-        <button id={styles.searchButton} onClick={ () => {
-            var url = `/app/browse/${router.query.subject_id}`
-            if (searchTopic) url += `?topic=${searchTopic}`
-            if (searchClass && !searchTopic) url += `?class=${searchClass}`
-            if (searchClass && searchTopic) url += `&class=${searchClass}`
-
-            router.push(url) 
-          }}>{t("search")}</button>
+        <button id={styles.searchButton} onClick={ () => { router.push(getLinkToPage(1)) }}>{t("search")}</button>
       </div>
       
       { exams.length > 0 && <>
@@ -75,9 +77,9 @@ export default function Browse({ exams, currentPage, totalPages }: {
 
       { totalPages > 1 && 
         <div id={styles.pageButtons}>
-          { currentPage > 1  && <a href={`/app/browse/${router.query.subject_id}?page=${currentPage - 1}`}>{currentPage - 1}</a> }
+          { currentPage > 1  && <a href={getLinkToPage(currentPage - 1)}>{currentPage - 1}</a> }
           <a id={styles.currentPage}>{currentPage}</a>
-          { currentPage < totalPages && <a href={`/app/browse/${router.query.subject_id}?page=${currentPage + 1}`}>{currentPage + 1}</a> }
+          { currentPage < totalPages && <a href={getLinkToPage(currentPage + 1)}>{currentPage + 1}</a> }
         </div>
       }
     </main>
